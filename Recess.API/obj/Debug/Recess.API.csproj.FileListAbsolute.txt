@@ -57,6 +57,5 @@ G:\Recess\recess_ws\Recess.API\Recess.API\bin\System.Web.WebPages.xml
 G:\Recess\recess_ws\Recess.API\Recess.API\bin\System.Web.WebPages.Deployment.xml
 G:\Recess\recess_ws\Recess.API\Recess.API\bin\System.Web.WebPages.Razor.xml
 G:\Recess\recess_ws\Recess.API\Recess.API\bin\Antlr3.Runtime.pdb
-G:\Recess\recess_ws\Recess.API\Recess.API\obj\Debug\Recess.API.csprojResolveAssemblyReference.cache
 G:\Recess\recess_ws\Recess.API\Recess.API\obj\Debug\Recess.API.dll
 G:\Recess\recess_ws\Recess.API\Recess.API\obj\Debug\Recess.API.pdb

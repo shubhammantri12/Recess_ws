@@ -56,3 +56,7 @@ G:\Recess\recess_ws\Recess.API\Recess.API\bin\System.Web.WebPages.Razor.xml
 G:\Recess\recess_ws\Recess.API\Recess.API\bin\Antlr3.Runtime.pdb
 G:\Recess\recess_ws\Recess.API\Recess.API\obj\Release\Recess.API.dll
 G:\Recess\recess_ws\Recess.API\Recess.API\obj\Release\Recess.API.pdb
+G:\Recess\recess_ws\Recess.API\Recess.API\bin\System.Web.Cors.dll
+G:\Recess\recess_ws\Recess.API\Recess.API\bin\System.Web.Http.Cors.dll
+G:\Recess\recess_ws\Recess.API\Recess.API\bin\System.Web.Http.Cors.xml
+G:\Recess\recess_ws\Recess.API\Recess.API\obj\Release\Recess.API.csprojResolveAssemblyReference.cache

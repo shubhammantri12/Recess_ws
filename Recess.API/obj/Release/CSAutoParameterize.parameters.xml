@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="sqlServerConnection-Web.config Connection String" description="sqlServerConnection Connection String used in web.config by the application to access the database." defaultValue="Data Source=tcp:recessapp.database.windows.net,1433;Initial Catalog=RecessApp;User Id=Recess@recessapp.database.windows.net;Password=Shubham!123" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="G:\\Recess\\recess_ws\\Recess\.API\\Recess\.API\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='sqlServerConnection']/@connectionString" />
+  </parameter>
+</parameters>

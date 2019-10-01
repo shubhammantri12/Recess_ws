@@ -201,7 +201,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\studentDetails.cs" />
+    <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\CourseDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\RecessRepository.cs" />
   </ItemGroup>
@@ -239,6 +240,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\PublishProfiles\Recess.pubxml" />
+    <None Include="Properties\PublishProfiles\recessws.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

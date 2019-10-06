@@ -1,5 +1,6 @@
 ﻿using Recess.API.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -34,7 +35,7 @@ namespace Recess.API.Repository
                 throw;
             }
         }
-        public List<CourseDetails> getCourseDetails()
+        public CourseDetails getCourseDetails()
         {
             try
             {
@@ -47,19 +48,78 @@ namespace Recess.API.Repository
                     DataTable _dt = new DataTable();
                     _adapter.Fill(_dt);
                     connection.Close();
-                    List<CourseDetails> courses = new List<CourseDetails>();
-                    if(_dt != null && _dt.Rows.Count>0)
-                    {
-                        courses = (from DataRow row in _dt.Rows
-                                   select new CourseDetails
-                                   {
-                                       courseName = Convert.ToString(row["course_name"])
-                                   }).ToList();
-                    }
-
+                    CourseDetails courses = new CourseDetails();
+                    ArrayList array = new ArrayList();
+                    foreach (DataRow dataRow in _dt.Rows)
+                        array.Add(string.Join(",", dataRow.ItemArray.Select(item => item.ToString())));
+                    courses.courseName = array;
                     return courses;
                 }
                 
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<AllCourses> getAllCourses()
+        {
+            try
+            {
+                string query = "recessApp.dbo.getAllCourses";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<AllCourses> courses = new List<AllCourses>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        courses = (from DataRow row in _dt.Rows
+                                   select new AllCourses
+                                   {
+                                       courseId = Convert.ToInt32(row["Courseid"]),
+                                       courseCategory = Convert.ToString(row["courseCategory"]),
+                                       title = Convert.ToString(row["Title"]),
+                                       submittedBy = Convert.ToString(row["submittedby"]),
+                                       teacherRating = Convert.ToDouble(row["teacherRating"]),
+                                       imageUrl = Convert.ToString(row["imageUrl"])
+                                   }).ToList();
+                    }
+                    return courses;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool isValidEmail(string email)
+        {
+            try
+            {
+                string query = "select * from RecessApp.dbo.userdetails where email_id = @email ";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+                    command.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = email;
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
             }
             catch (Exception ex)
             {

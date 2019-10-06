@@ -1,6 +1,7 @@
 ﻿using Recess.API.Models;
 using Recess.API.Repository;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -25,11 +26,12 @@ namespace Recess.API.Business
                 throw;
             }
         }
-        public List<CourseDetails> getCourseDetails()
+
+        public bool IsValidEmail(string email)
         {
             try
             {
-                List<CourseDetails> Response = _repository.getCourseDetails();
+                bool Response = _repository.isValidEmail(email);
                 return Response;
             }
             catch (Exception ex)
@@ -37,51 +39,58 @@ namespace Recess.API.Business
                 throw;
             }
         }
-        private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordsalt = hmac.Key;
-                passwordhash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
-        public bool login(string username,string password)
-        {
-            byte[] passwordhash, passwordsalt;
-            createPassword(password, out passwordhash, out passwordsalt);
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordsalt))
-            {
-                byte[] computedhash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                for(int i=0;i< computedhash.Length;i++)
-                {
-                    if(computedhash[i]!=passwordhash[i])
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        public bool PostUserDetails(string username, string password)
+
+        public CourseDetails getCourseDetails()
         {
             try
             {
-                string query = "insert into RecessApp.dbo.userdetails values (@username,@pwd)";
-                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
-                {
-                    SqlCommand command = new SqlCommand(query, connection);
-                    command.Parameters.Add("@username", SqlDbType.VarChar, 50).Value = username;
-                    command.Parameters.Add("@pwd", SqlDbType.VarChar, 50).Value = password;
-                    connection.Open();
-                    command.ExecuteNonQuery();
-                    connection.Close();
-                }
-                return true;
+                CourseDetails courses = _repository.getCourseDetails();
+               // CourseDetails[] Response = courses.ToArray();
+                return courses;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
+        }
+        public List<AllCourses> getAllCourses()
+        {
+            try
+            {
+                List<AllCourses> courses = _repository.getAllCourses();
+                // CourseDetails[] Response = courses.ToArray();
+                return courses;
             }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
+        //{
+        //    using (var hmac = new System.Security.Cryptography.HMACSHA512())
+        //    {
+        //        passwordsalt = hmac.Key;
+        //        passwordhash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //    }
+        //}
+        //public bool login(string username,string password)
+        //{
+        //    byte[] passwordhash, passwordsalt;
+        //    createPassword(password, out passwordhash, out passwordsalt);
+        //    using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordsalt))
+        //    {
+        //        byte[] computedhash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //        for(int i=0;i< computedhash.Length;i++)
+        //        {
+        //            if(computedhash[i]!=passwordhash[i])
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //    }
+        //    return true;
+        //}
+
     }
 }

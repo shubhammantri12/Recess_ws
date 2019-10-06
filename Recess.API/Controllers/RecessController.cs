@@ -1,6 +1,7 @@
 ﻿using Recess.API.Business;
 using Recess.API.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -50,10 +51,19 @@ namespace Recess.API.Controllers
         {
             try
             {
-                bool response = _business.register(user);
-                return Request.CreateResponse(HttpStatusCode.OK, response);
+                bool response = false;
+                if (_business.IsValidEmail(user.email_id))
+                {                
+                  response = _business.register(user);
+                    return Request.CreateResponse(HttpStatusCode.OK, response);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Email_Id is already registered");
+                }
+                                 
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
             }
@@ -64,7 +74,21 @@ namespace Recess.API.Controllers
         {
             try
             {
-                List<CourseDetails> response = _business.getCourseDetails();
+                CourseDetails response = _business.getCourseDetails();
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+            }
+        }
+        [HttpGet]
+        [Route("getAllCourses")]
+        public HttpResponseMessage getAllCourses()
+        {
+            try
+            {
+                List<AllCourses> response = _business.getAllCourses();
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
             catch (Exception)

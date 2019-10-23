@@ -12,18 +12,46 @@ namespace Recess.API.Repository
 {
     public class RecessRepository
     {
-        public bool register(LoginModel user)
+        public bool register(UserModel user)
         {
             try
             {
-                string query = "insert into RecessApp.dbo.userdetails (username,email_id,phone_nbr,course) values (@username,@email_id,@phonenbr,@course)";
+                string query = "RecessApp.dbo.insertUserDetails";
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
                 {
                     SqlCommand command = new SqlCommand(query, connection);
-                    command.Parameters.Add("@username", SqlDbType.VarChar, 50).Value = user.username;
-                    command.Parameters.Add("@email_id", SqlDbType.VarChar, 50).Value = user.email_id;
-                    command.Parameters.Add("@phonenbr", SqlDbType.VarChar, 50).Value = user.phone_nbr;
-                    command.Parameters.Add("@course", SqlDbType.VarChar, 50).Value = user.course;
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@username", SqlDbType.VarChar, 30).Value = user.displayName;
+                    command.Parameters.Add("@email_id", SqlDbType.VarChar, 50).Value = user.email;
+                    command.Parameters.Add("@phonenbr", SqlDbType.VarChar, 15).Value = Convert.ToString(user.phoneNumber) ;
+                    command.Parameters.Add("@course", SqlDbType.VarChar, 15).Value = Convert.ToString(user.course);
+                    command.Parameters.Add("@photoUrl", SqlDbType.VarChar, 100).Value = Convert.ToString(user.photoUrl); ;
+                    command.Parameters.Add("@emailVerified", SqlDbType.VarChar, 50).Value = user.emailVerified;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool UpdateUser(UserModel user)
+        {
+            try
+            {
+                string query = "RecessApp.dbo.UpdateUserDetails";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@username", SqlDbType.VarChar, 30).Value = user.displayName;
+                    command.Parameters.Add("@email_id", SqlDbType.VarChar, 50).Value = user.email;
+                    command.Parameters.Add("@phonenbr", SqlDbType.VarChar, 15).Value = user.phoneNumber;
+                    command.Parameters.Add("@course", SqlDbType.VarChar, 15).Value = user.course;
+                    command.Parameters.Add("@photoUrl", SqlDbType.VarChar, 100).Value = user.photoUrl;
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();
@@ -88,6 +116,40 @@ namespace Recess.API.Repository
                                        submittedBy = Convert.ToString(row["submittedby"]),
                                        teacherRating = Convert.ToDouble(row["teacherRating"]),
                                        imageUrl = Convert.ToString(row["imageUrl"])
+                                   }).ToList();
+                    }
+                    return courses;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<AppDetails> getAppDetails()
+        {
+            try
+            {
+                string query = "select * from recessApp.dbo.AppDetails";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<AppDetails> courses = new List<AppDetails>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        courses = (from DataRow row in _dt.Rows
+                                   select new AppDetails
+                                   {
+                                       Id = Convert.ToInt32(row["id"]),
+                                       Description = Convert.ToString(row["description"]),
+                                       Title = Convert.ToString(row["title"]),
                                    }).ToList();
                     }
                     return courses;

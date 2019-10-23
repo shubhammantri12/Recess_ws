@@ -14,14 +14,51 @@ namespace Recess.API.Business
     public class RecessBusiness
     {
         RecessRepository _repository = new RecessRepository();
-        public bool register(LoginModel user)
+        public bool register(UserModel user)
         {
             try
             {
+                if (user.course == null)
+                {
+                    user.course = "";
+                }
+                if (user.phoneNumber == null)
+                {
+                    user.phoneNumber = "";
+                }
+                if (user.photoUrl == null)
+                {
+                    user.photoUrl = "";
+                }
+                
                 bool Response = _repository.register(user);
                 return Response;
             }
             catch(Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool UpdateUser(UserModel user)
+        {
+            try
+            {
+                if (user.course == null)
+                {
+                    user.course = "";
+                }
+                if (user.phoneNumber == null)
+                {
+                    user.phoneNumber = "";
+                }
+                if (user.photoUrl == null)
+                {
+                    user.photoUrl = "";
+                }
+                bool Response = _repository.UpdateUser(user);
+                return Response;
+            }
+            catch (Exception ex)
             {
                 throw;
             }
@@ -58,6 +95,19 @@ namespace Recess.API.Business
             try
             {
                 List<AllCourses> courses = _repository.getAllCourses();
+                // CourseDetails[] Response = courses.ToArray();
+                return courses;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<AppDetails> getAppDetails()
+        {
+            try
+            {
+                List<AppDetails> courses = _repository.getAppDetails();
                 // CourseDetails[] Response = courses.ToArray();
                 return courses;
             }

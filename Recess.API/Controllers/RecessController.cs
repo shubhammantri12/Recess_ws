@@ -28,31 +28,15 @@ namespace Recess.API.Controllers
                     throw;
                 }
             }
-        //[HttpGet]
-        //[Route("getStudentDetails")]
-        //public HttpResponseMessage getStudentDetails()
-        //{
-        //    try
-        //    {
-        //        studentDetails obj = new studentDetails();
-        //        obj.Name = "Shubham";
-        //        obj.id = 1;
-        //        return Request.CreateResponse(HttpStatusCode.OK, obj);
-
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
-        //    }
-        //}
+        
         [HttpPost]
-        [Route("register")]
-        public HttpResponseMessage register(LoginModel user)
+        [Route("registerUser")]
+        public HttpResponseMessage registerUser(UserModel user)
         {
             try
             {
                 bool response = false;
-                if (_business.IsValidEmail(user.email_id))
+                if (_business.IsValidEmail(user.email))
                 {                
                   response = _business.register(user);
                     return Request.CreateResponse(HttpStatusCode.OK, response);
@@ -63,9 +47,9 @@ namespace Recess.API.Controllers
                 }
                                  
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpGet]
@@ -96,19 +80,35 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
             }
         }
-        //[HttpPost]
-        //[Route("PostUserDetails")]
-        //public HttpResponseMessage PostUserDetails(string username, string password)
-        //{
-        //    try
-        //    {
-        //        bool response = _business.PostUserDetails(username, password);
-        //        return Request.CreateResponse(HttpStatusCode.OK, response);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
-        //    }
-        //}
+        [HttpGet]
+        [Route("getAppDetails")]
+        public HttpResponseMessage getAppDetails()
+        {
+            try
+            {
+                List<AppDetails> response = _business.getAppDetails();
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+            }
+        }
+        [HttpPost]
+        [Route("UpdateUser")]
+        public HttpResponseMessage UpdateUser(UserModel user)
+        {
+            try
+            {
+                bool response = false;     
+                response = _business.UpdateUser(user);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
     }
 }

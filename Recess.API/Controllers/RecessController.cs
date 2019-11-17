@@ -1,11 +1,16 @@
-﻿using Recess.API.Business;
+﻿using Newtonsoft.Json;
+using Recess.API.Business;
 using Recess.API.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace Recess.API.Controllers
@@ -108,6 +113,85 @@ namespace Recess.API.Controllers
             catch (Exception ex)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpPost]
+        [Route("SaveCourseDetails")]
+        public HttpResponseMessage SaveCourseDetails(SaveCourseDetails course)
+        {
+            try
+            {
+                
+                bool response = false;
+                //var multipartstreamprovider = new MultipartMemoryStreamProvider();
+                //await Request.Content.ReadAsMultipartAsync(multipartstreamprovider , new CancellationToken());
+                //string rawRequest;
+                //using (var stream = new StreamReader(multipartstreamprovider.Contents[0].ReadAsStreamAsync().Result))
+                //{
+                //    stream.BaseStream.Position = 0;
+                //    rawRequest = stream.ReadToEnd();
+                //}
+                //var course = JsonConvert.DeserializeObject<SaveCourseDetails>(rawRequest);
+                //    var httpFiles = HttpContext.Current.Request.Files;
+                if (_business.IsValidCourseTitle(course.title))
+                {
+                    response = _business.SaveCourseDetails(course);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "A course with same title already exists");
+                }
+                    return Request.CreateResponse(HttpStatusCode.OK, response);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("getCourseContent")]
+        public HttpResponseMessage getCourseContent(int courseid)
+        {
+            try
+            {
+
+                getCourseContent response = new getCourseContent();               
+                response = _business.getCourseContent(courseid);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("getAllTeacherDetails")]
+        public HttpResponseMessage getAllTeacherDetails()
+        {
+            try
+            {
+                List<TeacherDetails> response = _business.getAllTeacherDetails();
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("getAllVideos")]
+        public HttpResponseMessage getAllVideos()
+        {
+            try
+            {
+                List<AllCourses> response = _business.getAllVideos();
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
             }
         }
     }

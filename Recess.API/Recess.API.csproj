@@ -203,8 +203,12 @@
     </Compile>
     <Compile Include="Models\AllCourses.cs" />
     <Compile Include="Models\AppDetails.cs" />
+    <Compile Include="Models\getCourseContent.cs" />
+    <Compile Include="Models\SaveCourseDetails.cs" />
+    <Compile Include="Models\TeacherDetails.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\CourseDetails.cs" />
+    <Compile Include="Models\VideoLessons.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\RecessRepository.cs" />
   </ItemGroup>

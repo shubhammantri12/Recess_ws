@@ -13,6 +13,7 @@ namespace Recess.API.Models
         public double currentRating { get; set; }
         public int totalcount { get; set; }
         public string photourl { get; set; }
+        
        
     }
     public class TeacherRating

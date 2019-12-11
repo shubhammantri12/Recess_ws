@@ -257,25 +257,106 @@ namespace Recess.API.Repository
                     connection.Open();
                     SqlDataAdapter _adapter = new SqlDataAdapter(command);
                     DataTable _dt = new DataTable();
-                    _adapter.Fill(_dt);
+                    DataSet _ds = new DataSet();
+                    _adapter.Fill(_ds);
                     connection.Close();
                     getCourseContent courses = new getCourseContent();
-                    if (_dt != null && _dt.Rows.Count > 0)
+                    if (_ds.Tables[0].Rows.Count > 0)
                     {
-                        courses.courseid = Convert.ToInt32(_dt.Rows[0]["Courseid"]);
-                        courses.courseCategory = Convert.ToString(_dt.Rows[0]["courseCategory"]);
-                        courses.title = Convert.ToString(_dt.Rows[0]["Title"]);
-                        courses.description = Convert.ToString(_dt.Rows[0]["Description"]);
-                        courses.submittedBy = Convert.ToString(_dt.Rows[0]["submittedby"]);
-                        courses.VideoUrl = Convert.ToString(_dt.Rows[0]["videoUrl"]);
-                        courses.imageUrl = Convert.ToString(_dt.Rows[0]["imageUrl"]);
-                        courses.teacherRating = Convert.ToDouble(_dt.Rows[0]["teacherRating"]);
-                        courses.beginDate = Convert.ToDateTime(_dt.Rows[0]["beginDate"]);
-                        courses.endDate = Convert.ToDateTime(_dt.Rows[0]["endDate"]);
+                        courses.coursecontent = fillCourseContent(_ds.Tables[0]);
                     }
+                    if (_ds.Tables[1].Rows.Count > 0)
+                    {
+                        courses.scheduledClasses = fillScheduledClasses(_ds.Tables[1]);
+                    }
+                    if (_ds.Tables[2].Rows.Count > 0)
+                    {
+                        courses.teachers = fillCourseTeacherDetails(_ds.Tables[2]);
+                    }
+                        //if (_ds.Tables[0] != null && _ds.Tables[0].Rows.Count > 0)
+                    //{
+                    //    courses.courseid = Convert.ToInt32(_dt.Rows[0]["Courseid"]);
+                    //    courses.courseCategory = Convert.ToString(_dt.Rows[0]["courseCategory"]);
+                    //    courses.title = Convert.ToString(_dt.Rows[0]["Title"]);
+                    //    courses.description = Convert.ToString(_dt.Rows[0]["Description"]);
+                    //    courses.submittedBy = Convert.ToString(_dt.Rows[0]["submittedby"]);
+                    //    courses.VideoUrl = Convert.ToString(_dt.Rows[0]["videoUrl"]);
+                    //    courses.imageUrl = Convert.ToString(_dt.Rows[0]["imageUrl"]);
+                    //    courses.courseRating = Convert.ToDouble(_dt.Rows[0]["courseRating"]);
+                    //    courses.totalRatingCount = Convert.ToInt32(_ds.Tables[0].Rows[0]["totalRatingCount"]);
+                    //    courses.beginDate = Convert.ToDateTime(_dt.Rows[0]["beginDate"]);
+                    //    courses.endDate = Convert.ToDateTime(_dt.Rows[0]["endDate"]);
+                    //}
                     return courses;
                 }
 
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private courseDetailsByCourseid fillCourseContent(DataTable _dt)
+        {
+            try
+            {
+                courseDetailsByCourseid courses = new courseDetailsByCourseid();
+                courses.courseid = Convert.ToInt32(_dt.Rows[0]["Courseid"]);
+                courses.courseCategory = Convert.ToString(_dt.Rows[0]["courseCategory"]);
+                courses.title = Convert.ToString(_dt.Rows[0]["Title"]);
+                courses.description = Convert.ToString(_dt.Rows[0]["Description"]);
+                courses.submittedBy = Convert.ToString(_dt.Rows[0]["submittedby"]);
+                courses.VideoUrl = Convert.ToString(_dt.Rows[0]["videoUrl"]);
+                courses.imageUrl = Convert.ToString(_dt.Rows[0]["imageUrl"]);
+                courses.courseRating = Convert.ToDouble(_dt.Rows[0]["courseRating"]);
+                courses.totalRatingCount = Convert.ToInt32(_dt.Rows[0]["totalRatingCount"]);
+                courses.beginDate = Convert.ToDateTime(_dt.Rows[0]["beginDate"]);
+                courses.endDate = Convert.ToDateTime(_dt.Rows[0]["endDate"]);
+                return courses;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<ScheduledClasses> fillScheduledClasses(DataTable _dt)
+        {
+            List<ScheduledClasses> classList = new List<ScheduledClasses>();
+            try
+            {
+               
+                classList = (from DataRow row in _dt.Rows
+                             select new ScheduledClasses
+                             {
+                             classId = Convert.ToInt32(row["classid"]),
+                            courseId = Convert.ToInt32(row["courseid"]),
+                            classTitle = Convert.ToString(row["classTitle"]),
+                            classDescription = Convert.ToString(row["classDescription"]),
+                            beginDate = Convert.ToDateTime(row["beginTime"]),
+                            endDate = Convert.ToDateTime(row["endTime"]),
+                            teacherid = Convert.ToInt32(row["teacherid"])
+            }).ToList();
+                return classList;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private CourseTeacherDetails fillCourseTeacherDetails(DataTable _dt)
+        {
+            try
+            {
+                CourseTeacherDetails teachers = new CourseTeacherDetails();
+                teachers.teacherId = Convert.ToInt32(_dt.Rows[0]["teacherid"]);
+                teachers.teacherName = Convert.ToString(_dt.Rows[0]["teachername"]);
+                teachers.description = Convert.ToString(_dt.Rows[0]["description"]);
+                teachers.teacherRating = Convert.ToDouble(_dt.Rows[0]["teacherRating"]);
+                teachers.teacherRatingCount = Convert.ToInt32(_dt.Rows[0]["ratingCount"]);
+                teachers.photoUrl = Convert.ToString(_dt.Rows[0]["photourl"]);
+                teachers.zoomid = Convert.ToString(_dt.Rows[0]["zoomid"]);
+                
+                return teachers;
             }
             catch (Exception ex)
             {
@@ -352,6 +433,99 @@ namespace Recess.API.Repository
                                    }).ToList();
                     }
                     return videos;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool registerClass(RegisterClass registerObject)
+        {
+            try
+            {
+                string query = "RecessApp.dbo.RegisterClass";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@classid", SqlDbType.Int).Value = registerObject.classid;
+                    command.Parameters.Add("@courseid", SqlDbType.Int).Value = registerObject.courseid;
+                    command.Parameters.Add("@username", SqlDbType.VarChar, 25).Value = Convert.ToString(registerObject.username);
+                    command.Parameters.Add("@useremail", SqlDbType.VarChar, 100).Value = Convert.ToString(registerObject.useremail);
+                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = Convert.ToString(registerObject.teacherid); ;
+                    command.Parameters.Add("@classlink", SqlDbType.VarChar, 100).Value = registerObject.classLink;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool SaveUserReviews(SaveUserReviews SaveUserReviews)
+        {
+            try
+            {
+                string query = "RecessApp.dbo.SaveUserReviews";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@username", SqlDbType.VarChar, 50).Value = SaveUserReviews.username;
+                    command.Parameters.Add("@reviewText", SqlDbType.VarChar, 1000).Value = SaveUserReviews.reviewText;
+                    command.Parameters.Add("@useremail", SqlDbType.VarChar, 50).Value = SaveUserReviews.useremail;
+                    command.Parameters.Add("@reviewFor", SqlDbType.VarChar, 10).Value = SaveUserReviews.reviewFor;
+                    command.Parameters.Add("@submittedOn", SqlDbType.DateTime, 200).Value = SaveUserReviews.submittedOn;
+                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = SaveUserReviews.teacherid;
+                    command.Parameters.Add("@courseid", SqlDbType.Int).Value = SaveUserReviews.courseid;
+                    command.Parameters.Add("@videoid", SqlDbType.Int).Value = SaveUserReviews.videoid;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<SaveUserReviews> GetUserReviews(int id,string type)
+        {
+            try
+            {
+                string query = "recessApp.dbo.GetUserReviews";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@id", SqlDbType.Int).Value = id;
+                    command.Parameters.Add("@type", SqlDbType.VarChar, 10).Value = type.ToUpper();
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<SaveUserReviews> userReviews = new List<SaveUserReviews>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        userReviews = (from DataRow row in _dt.Rows
+                                    select new SaveUserReviews
+                                    {
+                                        courseid = Convert.ToInt32(row["courseid"]),
+                                        videoid = Convert.ToInt32(row["videoid"]),
+                                        username = Convert.ToString(row["username"]),
+                                        reviewText = Convert.ToString(row["reviewText"]),
+                                        teacherid = Convert.ToInt32(row["teacherid"]),
+                                        submittedOn = Convert.ToDateTime(row["submittedOn"])
+                                    }).ToList();
+                    }
+                    return userReviews;
                 }
 
             }

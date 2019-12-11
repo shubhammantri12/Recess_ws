@@ -194,5 +194,48 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
             }
         }
+        [HttpPost]
+        [Route("RegisterClass")]
+        public HttpResponseMessage RegisterClass(RegisterClass registerObject)
+        {
+            try
+            {
+                bool response = _business.registerClass(registerObject);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+            }
+        }
+        [HttpPost]
+        [Route("SaveUserReviews")]
+        public HttpResponseMessage SaveUserReviews(SaveUserReviews SaveUserReviews)
+        {
+            try
+            {
+                bool response = _business.SaveUserReviews(SaveUserReviews);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+            }
+        }
+        [HttpGet]
+        [Route("GetUserReviews")]
+        public HttpResponseMessage GetUserReviews(int id,string type)
+        {
+            try
+            {
+                List<SaveUserReviews> response = _business.GetUserReviews(id,type);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+            }
+        }
+
     }
 }

@@ -41,7 +41,7 @@ namespace Recess.API.Controllers
             try
             {
                 bool response = false;
-                if (_business.IsValidEmail(user.email))
+                if (_business.IsValidEmail(user.email,"U"))
                 {                
                   response = _business.register(user);
                     return Request.CreateResponse(HttpStatusCode.OK, response);
@@ -203,9 +203,9 @@ namespace Recess.API.Controllers
                 bool response = _business.registerClass(registerObject);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpPost]
@@ -217,9 +217,9 @@ namespace Recess.API.Controllers
                 bool response = _business.SaveUserReviews(SaveUserReviews);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpGet]
@@ -229,6 +229,41 @@ namespace Recess.API.Controllers
             try
             {
                 List<SaveUserReviews> response = _business.GetUserReviews(id,type);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+            }
+        }
+        [HttpPost]
+        [Route("SaveTeacherDetails")]
+        public HttpResponseMessage SaveTeacherDetails(SaveTeacherDetails TeacherDetails)
+        {
+            try
+            {
+                if (_business.IsValidEmail(TeacherDetails.email,"T"))
+                {
+                    bool response = _business.SaveTeacherDetails(TeacherDetails);
+                    return Request.CreateResponse(HttpStatusCode.OK, response);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Email_Id is already registered");
+                }
+            }
+            catch (Exception)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+            }
+        }
+        [HttpGet]
+        [Route("GetMyRegisteredClasses")]
+        public HttpResponseMessage GetMyRegisteredClasses(string emailId)
+        {
+            try
+            {
+                List<myRegisteredClasses> response = _business.GetMyRegisteredClasses(emailId);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
             catch (Exception)

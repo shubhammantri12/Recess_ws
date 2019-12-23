@@ -21,6 +21,7 @@ namespace Recess.API.Models
         //public int totalRatingCount { get; set; }
         public CourseTeacherDetails teachers { get; set; }
         public List<ScheduledClasses> scheduledClasses { get; set; }
+        public List<AllCourses> similarCourses { get; set; }
 
     }
     public class courseDetailsByCourseid

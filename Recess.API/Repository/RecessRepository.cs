@@ -162,11 +162,19 @@ namespace Recess.API.Repository
                 throw;
             }
         }
-        public bool isValidEmail(string email)
+        public bool isValidEmail(string email,string type)
         {
             try
             {
-                string query = "select * from RecessApp.dbo.userdetails where email_id = @email ";
+                string query = string.Empty;
+                if (type.ToUpper() =="T")
+                {
+                    query = "select * from RecessApp.dbo.teacherDetails where email_id = @email ";
+                }
+                else
+                {
+                  query = "select * from RecessApp.dbo.userdetails where email_id = @email ";
+                }
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
                 {
                     SqlCommand command = new SqlCommand(query, connection);
@@ -180,9 +188,11 @@ namespace Recess.API.Repository
                     {
                         return false;
                     }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                return true;
-
             }
             catch (Exception ex)
             {
@@ -273,7 +283,11 @@ namespace Recess.API.Repository
                     {
                         courses.teachers = fillCourseTeacherDetails(_ds.Tables[2]);
                     }
-                        //if (_ds.Tables[0] != null && _ds.Tables[0].Rows.Count > 0)
+                    if (_ds.Tables[3].Rows.Count > 0)
+                    {
+                        courses.similarCourses = fillSimilarCourses(_ds.Tables[3]);
+                    }
+                    //if (_ds.Tables[0] != null && _ds.Tables[0].Rows.Count > 0)
                     //{
                     //    courses.courseid = Convert.ToInt32(_dt.Rows[0]["Courseid"]);
                     //    courses.courseCategory = Convert.ToString(_dt.Rows[0]["courseCategory"]);
@@ -334,7 +348,7 @@ namespace Recess.API.Repository
                             classDescription = Convert.ToString(row["classDescription"]),
                             beginDate = Convert.ToDateTime(row["beginTime"]),
                             endDate = Convert.ToDateTime(row["endTime"]),
-                            teacherid = Convert.ToInt32(row["teacherid"])
+                            teacherId = Convert.ToInt32(row["teacherid"])
             }).ToList();
                 return classList;
             }
@@ -363,6 +377,30 @@ namespace Recess.API.Repository
                 throw;
             }
         }
+        private List<AllCourses> fillSimilarCourses(DataTable _dt)
+        {
+            List<AllCourses> CourseList = new List<AllCourses>();
+            try
+            {
+
+                CourseList = (from DataRow row in _dt.Rows
+                             select new AllCourses
+                             {
+                                       courseId = Convert.ToInt32(row["Courseid"]),
+                                       courseCategory = Convert.ToString(row["courseCategory"]).Trim(),
+                                       title = Convert.ToString(row["Title"]),
+                                       submittedBy = Convert.ToString(row["submittedby"]),
+                                       teacherRating = Convert.ToDouble(row["teacherRating"]),
+                                       imageUrl = Convert.ToString(row["imageUrl"])
+                             }).ToList();
+                return CourseList;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public List<TeacherDetails> getAllTeacherDetails()
         {
             try
@@ -454,7 +492,7 @@ namespace Recess.API.Repository
                     command.Parameters.Add("@courseid", SqlDbType.Int).Value = registerObject.courseid;
                     command.Parameters.Add("@username", SqlDbType.VarChar, 25).Value = Convert.ToString(registerObject.username);
                     command.Parameters.Add("@useremail", SqlDbType.VarChar, 100).Value = Convert.ToString(registerObject.useremail);
-                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = Convert.ToString(registerObject.teacherid); ;
+                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = Convert.ToString(registerObject.teacherId); ;
                     command.Parameters.Add("@classlink", SqlDbType.VarChar, 100).Value = registerObject.classLink;
                     connection.Open();
                     command.ExecuteNonQuery();
@@ -481,7 +519,7 @@ namespace Recess.API.Repository
                     command.Parameters.Add("@useremail", SqlDbType.VarChar, 50).Value = SaveUserReviews.useremail;
                     command.Parameters.Add("@reviewFor", SqlDbType.VarChar, 10).Value = SaveUserReviews.reviewFor;
                     command.Parameters.Add("@submittedOn", SqlDbType.DateTime, 200).Value = SaveUserReviews.submittedOn;
-                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = SaveUserReviews.teacherid;
+                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = SaveUserReviews.teacherId;
                     command.Parameters.Add("@courseid", SqlDbType.Int).Value = SaveUserReviews.courseid;
                     command.Parameters.Add("@videoid", SqlDbType.Int).Value = SaveUserReviews.videoid;
                     connection.Open();
@@ -521,9 +559,98 @@ namespace Recess.API.Repository
                                         videoid = Convert.ToInt32(row["videoid"]),
                                         username = Convert.ToString(row["username"]),
                                         reviewText = Convert.ToString(row["reviewText"]),
-                                        teacherid = Convert.ToInt32(row["teacherid"]),
+                                        teacherId = Convert.ToInt32(row["teacherid"]),
                                         submittedOn = Convert.ToDateTime(row["submittedOn"])
                                     }).ToList();
+                    }
+                    return userReviews;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool SaveTeacherDetails(SaveTeacherDetails TeacherDetails)
+        {
+            try
+            {
+                string query = "RecessApp.dbo.SaveTeacherDetails";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@Teachername", SqlDbType.VarChar, 50).Value = TeacherDetails.name;
+                    command.Parameters.Add("@phoneNumber", SqlDbType.VarChar, 15).Value = TeacherDetails.phoneNumber;
+                    command.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = TeacherDetails.email;
+                    command.Parameters.Add("@photourl", SqlDbType.VarChar, 250).Value = TeacherDetails.photourl;
+                    command.Parameters.Add("@description", SqlDbType.VarChar, 500).Value = TeacherDetails.description;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool checkIfPreviouslyRegisterd(RegisterClass register)
+        {
+            try
+            {
+                string query = "select * from RecessApp.dbo.registedClasses where useremail = @email and classid = @classid ";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+                    command.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = register.useremail;
+                    command.Parameters.Add("@classid", SqlDbType.VarChar, 50).Value = register.classid;
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<myRegisteredClasses> getMyRegisteredClasses(string emailId)
+        {
+            try
+            {
+                string query = "recessApp.dbo.getMyRegisteredClass";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@useremail", SqlDbType.VarChar, 50).Value = emailId;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<myRegisteredClasses> userReviews = new List<myRegisteredClasses>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        userReviews = (from DataRow row in _dt.Rows
+                                       select new myRegisteredClasses
+                                       {
+                                           courseId = Convert.ToInt32(row["courseid"]),
+                                          classId = Convert.ToInt32(row["classid"]),
+                                          userName = Convert.ToString(row["username"])
+
+                                       }).ToList();
                     }
                     return userReviews;
                 }

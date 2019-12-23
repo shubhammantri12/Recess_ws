@@ -14,6 +14,6 @@ namespace Recess.API.Models
         public DateTime submittedOn { get; set; }
         public int courseid { get; set; }
         public int videoid { get; set; }
-        public int teacherid { get; set; }
+        public int teacherId { get; set; }
     }
 }

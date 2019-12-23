@@ -9,7 +9,7 @@ namespace Recess.API.Models
     {
         public int classId { get; set; }
         public int courseId { get; set; }
-        public int teacherid { get; set; }
+        public int teacherId { get; set; }
         public string classDescription { get; set; }
         public string classTitle { get; set; }
         public DateTime beginDate { get; set; }

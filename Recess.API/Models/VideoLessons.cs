@@ -12,7 +12,7 @@ namespace Recess.API.Models
             public string videodescription { get; set; }
             public DateTime submittedOn { get; set; }
             public string submittedBy { get; set; }
-            public int Teacherid { get; set; }
+            public int TeacherId { get; set; }
             public string VideoUrl { get; set; }
             public double videoRating { get; set; }
             public int videoRatingCount { get; set; }   

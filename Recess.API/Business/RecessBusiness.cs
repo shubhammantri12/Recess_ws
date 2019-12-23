@@ -68,11 +68,11 @@ namespace Recess.API.Business
             }
         }
 
-        public bool IsValidEmail(string email)
+        public bool IsValidEmail(string email,string type)
         {
             try
             {
-                bool Response = _repository.isValidEmail(email);
+                bool Response = _repository.isValidEmail(email, type);
                 return Response;
             }
             catch (Exception ex)
@@ -215,12 +215,34 @@ namespace Recess.API.Business
         }
         public bool registerClass(RegisterClass registerObject)
         {
-            bool register = _repository.registerClass(registerObject);
-            if(register)
+            try
             {
-                sendmailtouser(registerObject);
+                bool isValid = checkIfPreviouslyRegisterd(registerObject);
+                if (isValid)
+                {
+                    bool register = _repository.registerClass(registerObject);
+
+                    if (register)
+                    {
+                        sendmailtouser(registerObject);
+
+                    }
+                }
+                else
+                {
+                    throw new Exception("User has already registered for the class");
+
+                }
+                return true;
             }
-            return true;
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private bool checkIfPreviouslyRegisterd(RegisterClass register)
+        {
+           return _repository.checkIfPreviouslyRegisterd(register);
         }
         public bool SaveUserReviews(SaveUserReviews SaveUserReviews)
         {
@@ -270,9 +292,10 @@ namespace Recess.API.Business
                 message.Body = sb.ToString();
                 smtp.Port = 587;
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
-                                              smtp.EnableSsl = true;
-                                              smtp.UseDefaultCredentials = false;
-                                              smtp.Credentials = new NetworkCredential("shubhammantri27@gmail.com", "9163131886");
+                smtp.UseDefaultCredentials = false;
+                smtp.EnableSsl = true;
+                smtp.Credentials = new NetworkCredential("shubhammantri27@gmail.com", "9163131886");
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 //smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(message);
             }
@@ -281,6 +304,39 @@ namespace Recess.API.Business
                 throw;
             }
         }
+        public bool SaveTeacherDetails(SaveTeacherDetails TeacherDetails)
+        {
+            try
+            {
+                if (TeacherDetails.photourl == null)
+                {
+                    TeacherDetails.photourl = "";
+                }
+                bool response = _repository.SaveTeacherDetails(TeacherDetails);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<myRegisteredClasses> GetMyRegisteredClasses(string emailId)
+        {
+            try
+            {
+                List<myRegisteredClasses> registeredClasses = _repository.getMyRegisteredClasses(emailId);
+                return registeredClasses;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+
+
+        }
+
+
+
         //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
         //{
         //    using (var hmac = new System.Security.Cryptography.HMACSHA512())

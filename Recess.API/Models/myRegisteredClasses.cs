@@ -11,6 +11,8 @@ namespace Recess.API.Models
 
         public int courseId { get; set; }
 
-        public string userName { get; set; }
+        public string classTitle { get; set; }
+        public DateTime beginDate { get; set; }
+        public DateTime endDate { get; set; }
     }
 }

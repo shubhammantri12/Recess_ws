@@ -648,13 +648,292 @@ namespace Recess.API.Repository
                                        {
                                            courseId = Convert.ToInt32(row["courseid"]),
                                           classId = Convert.ToInt32(row["classid"]),
-                                          userName = Convert.ToString(row["username"])
-
+                                           classTitle = Convert.ToString(row["classTitle"]),
+                                           beginDate = Convert.ToDateTime(row["beginTime"]),
+                                           endDate = Convert.ToDateTime(row["endTime"])
                                        }).ToList();
                     }
                     return userReviews;
                 }
 
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public teacherContent GetTeacherInfo(int teacherId)
+        {
+            try
+            {
+                string query = "recessApp.dbo.getTeacherContent";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = teacherId;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    DataSet _ds = new DataSet();
+                    _adapter.Fill(_ds);
+                    connection.Close();
+                    teacherContent teacherInfo = new teacherContent();
+                    if (_ds.Tables[0].Rows.Count > 0)
+                    {
+                        teacherInfo.teacherInfo = fillTeacherInfo(_ds.Tables[0],_ds);
+                    }
+                    if (_ds.Tables[1].Rows.Count > 0)
+                    {
+                        teacherInfo.Courses = fillTeacherCourseInfo(_ds.Tables[1]);
+                    }
+                    if (_ds.Tables[2].Rows.Count > 0)
+                    {
+                        teacherInfo.Videos = fillTeacherVideoInfo(_ds.Tables[2]);
+                    }
+                    //if (_ds.Tables.Count > 0)
+                    //{
+                    //    teacherInfo.teacherStatistics = fillTeacherStatistics(_ds);
+                    //}
+                    return teacherInfo;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private teacherInfo fillTeacherInfo(DataTable _dt,DataSet _ds)
+        {
+            try
+            {
+                teacherInfo teacherInfo = new teacherInfo();
+                teacherInfo.teacherName = Convert.ToString(_dt.Rows[0]["teachername"]);
+                teacherInfo.rating = Convert.ToDouble(_dt.Rows[0]["teacherRating"]);
+                teacherInfo.ratingCount = Convert.ToInt32(_dt.Rows[0]["ratingCount"]);
+                teacherInfo.imageUrl = Convert.ToString(_dt.Rows[0]["photourl"]);
+                teacherInfo.emailId = Convert.ToString(_dt.Rows[0]["email_id"]);
+                teacherInfo.description = Convert.ToString(_dt.Rows[0]["description"]);
+                teacherInfo.videoCount = Convert.ToInt32(_ds.Tables[3].Rows[0]["videoCount"]);
+                teacherInfo.classCount = Convert.ToInt32(_ds.Tables[4].Rows[0]["classCount"]);
+                teacherInfo.courseCount = Convert.ToInt32(_ds.Tables[5].Rows[0]["courseCount"]);
+
+                return teacherInfo;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<teacherCourseContent> fillTeacherCourseInfo(DataTable _dt)
+        {
+            try
+            {
+                List<teacherCourseContent> teacherCourses = new List<teacherCourseContent>();
+                teacherCourses = (from DataRow row in _dt.Rows
+                                  select new teacherCourseContent
+                                  {
+                                      Id = Convert.ToInt32(row["Courseid"]),
+                                      imageUrl = Convert.ToString(row["imageUrl"]),
+                                      title = Convert.ToString(row["Title"]),
+                                      description = Convert.ToString(row["description"]),
+                                      submittedBy = Convert.ToString(row["submittedBy"])
+                                      //category = Convert.ToString(row["courseCategory"]),
+                                      //beginDate = Convert.ToDateTime(row["beginDate"]),
+                                      //endDate = Convert.ToDateTime(row["endDate"])
+                                  }).ToList();
+                return teacherCourses;
+                
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<teacherVideoContent> fillTeacherVideoInfo(DataTable _dt)
+        {
+            try
+            {
+                List<teacherVideoContent> teacherVideos = new List<teacherVideoContent>();
+                teacherVideos = (from DataRow row in _dt.Rows
+                                  select new teacherVideoContent
+                                  {
+                                      Id = Convert.ToInt32(row["videoid"]),
+                                      imageUrl = Convert.ToString(row["imageUrl"]),
+                                      title = Convert.ToString(row["videoTitle"]),
+                                      category = Convert.ToString(row["videoCategory"]),
+                                      submittedOn = Convert.ToDateTime(row["submittedOn"]),
+                                      
+                                  }).ToList();
+                return teacherVideos;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private teacherStatistics fillTeacherStatistics(DataSet _ds)
+        {
+            try
+            {
+                teacherStatistics teacherStatistics = new teacherStatistics();
+                teacherStatistics.videoCount = Convert.ToInt32(_ds.Tables[3].Rows[0]["videoCount"]);
+                teacherStatistics.classCount = Convert.ToInt32(_ds.Tables[4].Rows[0]["classCount"]);
+                teacherStatistics.courseCount = Convert.ToInt32(_ds.Tables[5].Rows[0]["courseCount"]);
+               
+                return teacherStatistics;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public videoContent GetVideoInfo(int videoId)
+        {
+            try
+            {
+                string query = "recessApp.dbo.getVideoDetails";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@videoid", SqlDbType.Int).Value = videoId;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    DataSet _ds = new DataSet();
+                    _adapter.Fill(_ds);
+                    connection.Close();
+                    videoContent videoInfo = new videoContent();
+                    if (_ds.Tables[0].Rows.Count > 0)
+                    {
+                        videoInfo.videoInfo = fillVideoInfo(_ds.Tables[0]);
+                    }
+                    if (_ds.Tables[1].Rows.Count > 0)
+                    {
+                        videoInfo.teacherInfo = fillVideoTeacherInfo(_ds.Tables[1]);
+                    }
+                    if (_ds.Tables[3].Rows.Count > 0)
+                    {
+                        videoInfo.relatedCourses = fillRelatedCourseInfo(_ds.Tables[3]);
+                    }
+                    if (_ds.Tables[2].Rows.Count > 0)
+                    {
+                        videoInfo.similarVideos = fillSimilarVideoInfo(_ds.Tables[2]);
+                    }
+                    return videoInfo;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private videoInfo fillVideoInfo(DataTable _dt)
+        {
+            try
+            {
+                videoInfo videoInfo = new videoInfo();
+                videoInfo.title = Convert.ToString(_dt.Rows[0]["videoTitle"]);
+                videoInfo.description = Convert.ToString(_dt.Rows[0]["videoDescription"]);
+                videoInfo.category = Convert.ToString(_dt.Rows[0]["videoCategory"]);
+                videoInfo.videoUrl = Convert.ToString(_dt.Rows[0]["VideoUrl"]);
+                videoInfo.submittedOn = Convert.ToDateTime(_dt.Rows[0]["submittedOn"]);
+                return videoInfo;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private teacherInfoForVideo fillVideoTeacherInfo(DataTable _dt)
+        {
+            try
+            {
+                teacherInfoForVideo teacherInfo = new teacherInfoForVideo();
+                teacherInfo.id = Convert.ToInt32(_dt.Rows[0]["teacherid"]);
+                teacherInfo.name = Convert.ToString(_dt.Rows[0]["teachername"]);
+                teacherInfo.description = Convert.ToString(_dt.Rows[0]["description"]);
+                teacherInfo.photoUrl = Convert.ToString(_dt.Rows[0]["photourl"]);
+                teacherInfo.rating = Convert.ToDouble(_dt.Rows[0]["teacherRating"]);
+                teacherInfo.ratingCount = Convert.ToInt32(_dt.Rows[0]["ratingCount"]);
+                return teacherInfo;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<videoCourseContent> fillRelatedCourseInfo(DataTable _dt)
+        {
+            try
+            {
+                List<videoCourseContent> Courses = new List<videoCourseContent>();
+                Courses = (from DataRow row in _dt.Rows
+                                  select new videoCourseContent
+                                  {
+                                      Id = Convert.ToInt32(row["Courseid"]),
+                                      imageUrl = Convert.ToString(row["imageUrl"]),
+                                      title = Convert.ToString(row["Title"]),
+                                      category = Convert.ToString(row["courseCategory"]),
+                                      beginDate = Convert.ToDateTime(row["beginDate"]),
+                                      endDate = Convert.ToDateTime(row["endDate"]),
+                                  }).ToList();
+                return Courses;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<similarVideoDetails> fillSimilarVideoInfo(DataTable _dt)
+        {
+            try
+            {
+                List<similarVideoDetails> similarVideos = new List<similarVideoDetails>();
+                similarVideos = (from DataRow row in _dt.Rows
+                                 select new similarVideoDetails
+                                 {
+                                     id = Convert.ToInt32(row["videoid"]),
+                                     imageUrl = Convert.ToString(row["imageUrl"]),
+                                     title = Convert.ToString(row["videoTitle"]),
+                                     category = Convert.ToString(row["videoCategory"]),
+                                     submittedOn = Convert.ToDateTime(row["submittedOn"]),
+
+                                 }).ToList();
+                return similarVideos;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool ValidateTeacher(string email)
+        {
+            try
+            {
+                string query = string.Empty;
+                query = "select * from RecessApp.dbo.teacherdetails where email_id = @email ";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+                    command.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = email;
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
             catch (Exception ex)
             {

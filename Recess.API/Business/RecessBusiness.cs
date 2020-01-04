@@ -213,7 +213,7 @@ namespace Recess.API.Business
                 throw;
             }
         }
-        public bool registerClass(RegisterClass registerObject)
+        public List<myRegisteredClasses> registerClass(RegisterClass registerObject)
         {
             try
             {
@@ -233,7 +233,8 @@ namespace Recess.API.Business
                     throw new Exception("User has already registered for the class");
 
                 }
-                return true;
+                List<myRegisteredClasses> response = _repository.getMyRegisteredClasses(registerObject.useremail);
+                return response;
             }
             catch(Exception ex)
             {
@@ -334,8 +335,42 @@ namespace Recess.API.Business
 
 
         }
-
-
+        public teacherContent GetTeacherInfo (int teacherId)
+        {
+            try
+            {
+                teacherContent teacherInfo = _repository.GetTeacherInfo(teacherId);
+                return teacherInfo;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public videoContent GetVideoInfo(int videoId)
+        {
+            try
+            {
+                videoContent videoInfo = _repository.GetVideoInfo(videoId);
+                return videoInfo;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public bool ValidateTeacher(string email)
+        {
+            try
+            {
+                bool isValid = _repository.ValidateTeacher(email);
+                return isValid;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
         //{

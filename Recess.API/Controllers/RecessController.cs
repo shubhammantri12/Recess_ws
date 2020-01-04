@@ -189,9 +189,9 @@ namespace Recess.API.Controllers
                 List<AllCourses> response = _business.getAllVideos();
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpPost]
@@ -200,7 +200,7 @@ namespace Recess.API.Controllers
         {
             try
             {
-                bool response = _business.registerClass(registerObject);
+                List<myRegisteredClasses> response = _business.registerClass(registerObject);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
             catch (Exception ex)
@@ -231,9 +231,9 @@ namespace Recess.API.Controllers
                 List<SaveUserReviews> response = _business.GetUserReviews(id,type);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
         [HttpPost]
@@ -252,9 +252,9 @@ namespace Recess.API.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Email_Id is already registered");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpGet]
@@ -266,9 +266,51 @@ namespace Recess.API.Controllers
                 List<myRegisteredClasses> response = _business.GetMyRegisteredClasses(emailId);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("GetTeacherInfo")]
+        public HttpResponseMessage GetTeacherInfo(int teacherId)
+        {
+            try
+            {
+                teacherContent response = _business.GetTeacherInfo(teacherId);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("GetVideoInfo")]
+        public HttpResponseMessage GeGetVideoInfotTeacherInfo(int videoId)
+        {
+            try
+            {
+                videoContent response = _business.GetVideoInfo(videoId);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("ValidateTeacher")]
+        public HttpResponseMessage ValidateTeacher(string email)
+        {
+            try
+            {
+                bool response = _business.ValidateTeacher(email);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
 

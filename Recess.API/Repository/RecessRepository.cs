@@ -424,9 +424,9 @@ namespace Recess.API.Repository
                                        teacherId = Convert.ToInt32(row["teacherid"]),
                                        name = Convert.ToString(row["teachername"]),
                                        description = Convert.ToString(row["description"]),
-                                       totalcount = Convert.ToInt32(row["ratingCount"]),
-                                       currentRating = Convert.ToDouble(row["teacherRating"]),
-                                       photourl = Convert.ToString(row["photourl"])
+                                       totalcount = row["ratingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["ratingCount"]) ,
+                                       currentRating = row["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["teacherRating"]),
+                                       photourl = row["photourl"] == DBNull.Value ? "" : Convert.ToString(row["photourl"])
                                    }).ToList();
                     }
                     return teachers;
@@ -586,6 +586,8 @@ namespace Recess.API.Repository
                     command.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = TeacherDetails.email;
                     command.Parameters.Add("@photourl", SqlDbType.VarChar, 250).Value = TeacherDetails.photourl;
                     command.Parameters.Add("@description", SqlDbType.VarChar, 500).Value = TeacherDetails.description;
+                    command.Parameters.Add("@course", SqlDbType.Char, 20).Value = TeacherDetails.courseCategory;
+                    command.Parameters.Add("@gender", SqlDbType.Char, 2).Value = TeacherDetails.Gender;
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();

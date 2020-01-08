@@ -287,7 +287,7 @@ namespace Recess.API.Controllers
         }
         [HttpGet]
         [Route("GetVideoInfo")]
-        public HttpResponseMessage GeGetVideoInfotTeacherInfo(int videoId)
+        public HttpResponseMessage GetVideoInfo(int videoId)
         {
             try
             {

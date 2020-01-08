@@ -24,6 +24,7 @@ namespace Recess.API.Models
         public string phoneNumber { get; set; }
         public string photourl { get; set; }
 
-
+        public string courseCategory { get; set; }
+        public string Gender { get; set; }
     }
 }

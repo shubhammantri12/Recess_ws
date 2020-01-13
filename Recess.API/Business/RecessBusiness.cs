@@ -411,6 +411,22 @@ namespace Recess.API.Business
                 throw;
             }
         }
+        public List<SearchModel> search(string searchText,string type)
+        {
+            try
+            {
+                if(string.IsNullOrWhiteSpace(searchText))
+                {
+                    searchText = "";
+                }
+                List<SearchModel> response = _repository.search(searchText,type);
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
         //{

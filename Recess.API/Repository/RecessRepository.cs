@@ -115,8 +115,9 @@ namespace Recess.API.Repository
                                        courseCategory = Convert.ToString(row["courseCategory"]).Trim(),
                                        title = Convert.ToString(row["Title"]),
                                        submittedBy = Convert.ToString(row["submittedby"]),
-                                       teacherRating = Convert.ToDouble(row["teacherRating"]),
-                                       imageUrl = Convert.ToString(row["imageUrl"])
+                                       teacherRating = Convert.ToDouble(row["courseRating"]),
+                                       imageUrl = Convert.ToString(row["imageUrl"]),
+                                       ratingCount = Convert.ToInt32(row["TotalRatingCount"])
                                    }).ToList();
                     }
                     return courses;
@@ -740,7 +741,9 @@ namespace Recess.API.Repository
                                       imageUrl = Convert.ToString(row["imageUrl"]),
                                       title = Convert.ToString(row["Title"]),
                                       description = Convert.ToString(row["description"]),
-                                      submittedBy = Convert.ToString(row["submittedBy"])
+                                      submittedBy = Convert.ToString(row["submittedBy"]),
+                                      rating = Convert.ToDouble(row["courseRating"]),
+                                      ratingCount = Convert.ToInt32(row["TotalRatingCount"])
                                       //category = Convert.ToString(row["courseCategory"]),
                                       //beginDate = Convert.ToDateTime(row["beginDate"]),
                                       //endDate = Convert.ToDateTime(row["endDate"])
@@ -766,7 +769,9 @@ namespace Recess.API.Repository
                                       title = Convert.ToString(row["videoTitle"]),
                                       category = Convert.ToString(row["videoCategory"]),
                                       submittedOn = Convert.ToDateTime(row["submittedOn"]),
-                                      
+                                      submittedBy = Convert.ToString(row["submittedBy"]),
+                                      rating = Convert.ToDouble(row["videoRating"]),
+                                      ratingCount = Convert.ToInt32(row["totalRatingCount"])
                                   }).ToList();
                 return teacherVideos;
             }
@@ -812,10 +817,10 @@ namespace Recess.API.Repository
                     {
                         videoInfo.videoInfo = fillVideoInfo(_ds.Tables[0]);
                     }
-                    if (_ds.Tables[1].Rows.Count > 0)
-                    {
-                        videoInfo.teacherInfo = fillVideoTeacherInfo(_ds.Tables[1]);
-                    }
+                    //if (_ds.Tables[1].Rows.Count > 0)
+                    //{
+                    //    videoInfo.teacherInfo = fillVideoTeacherInfo(_ds.Tables[1]);
+                    //}
                     if (_ds.Tables[3].Rows.Count > 0)
                     {
                         videoInfo.relatedCourses = fillRelatedCourseInfo(_ds.Tables[3]);
@@ -842,6 +847,10 @@ namespace Recess.API.Repository
                 videoInfo.category = Convert.ToString(_dt.Rows[0]["videoCategory"]);
                 videoInfo.videoUrl = Convert.ToString(_dt.Rows[0]["VideoUrl"]);
                 videoInfo.submittedOn = Convert.ToDateTime(_dt.Rows[0]["submittedOn"]);
+                videoInfo.teacherId = Convert.ToInt32(_dt.Rows[0]["teacherId"]);
+                videoInfo.teacherName = Convert.ToString(_dt.Rows[0]["submittedBy"]);
+                videoInfo.rating = Convert.ToDouble(_dt.Rows[0]["videoRating"]);
+                videoInfo.ratingCount = Convert.ToInt32(_dt.Rows[0]["totalRatingCount"]);
                 return videoInfo;
             }
             catch (Exception ex)
@@ -875,12 +884,15 @@ namespace Recess.API.Repository
                 Courses = (from DataRow row in _dt.Rows
                                   select new videoCourseContent
                                   {
-                                      Id = Convert.ToInt32(row["Courseid"]),
+                                      id = Convert.ToInt32(row["Courseid"]),
                                       imageUrl = Convert.ToString(row["imageUrl"]),
                                       title = Convert.ToString(row["Title"]),
                                       category = Convert.ToString(row["courseCategory"]),
                                       beginDate = Convert.ToDateTime(row["beginDate"]),
                                       endDate = Convert.ToDateTime(row["endDate"]),
+                                      rating = Convert.ToDouble(row["CourseRating"]),
+                                      ratingCount = Convert.ToInt32(row["TotalRatingCount"]),
+                                      submittedBy = Convert.ToString(row["submittedBy"])
                                   }).ToList();
                 return Courses;
 
@@ -903,8 +915,10 @@ namespace Recess.API.Repository
                                      title = Convert.ToString(row["videoTitle"]),
                                      category = Convert.ToString(row["videoCategory"]),
                                      submittedOn = Convert.ToDateTime(row["submittedOn"]),
-
-                                 }).ToList();
+                                     submittedBy = Convert.ToString(row["submittedBy"]),
+                                     rating = Convert.ToDouble(row["videoRating"]),
+                                     ratingCount = Convert.ToInt32(row["totalRatingCount"])
+            }).ToList();
                 return similarVideos;
             }
             catch (Exception ex)
@@ -935,6 +949,40 @@ namespace Recess.API.Repository
                     {
                         return false;
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<SearchModel> search(string searchText,string type)
+        {
+            try
+            {
+                string query = "recessApp.dbo.getSearchResults";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@searchText", SqlDbType.VarChar,50).Value = searchText;
+                    command.Parameters.Add("@type", SqlDbType.VarChar,5).Value = type;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<SearchModel> searchResult = new List<SearchModel>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        searchResult = (from DataRow row in _dt.Rows
+                                        select new SearchModel
+                                        {
+                                            id = Convert.ToInt32(row["id"]),
+                                            title = Convert.ToString(row["title"])
+                                        }).ToList();
+                    }
+                    return searchResult;
                 }
             }
             catch (Exception ex)

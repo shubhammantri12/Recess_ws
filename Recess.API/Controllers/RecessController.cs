@@ -313,6 +313,20 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
+        [HttpGet]
+        [Route("search")]
+        public HttpResponseMessage search(string searchText, string type)
+        {
+            try
+            {
+                List<SearchModel> response = _business.search(searchText, type);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
 
     }
 }

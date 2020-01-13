@@ -211,6 +211,7 @@
     <Compile Include="Models\SaveCourseDetails.cs" />
     <Compile Include="Models\SaveUserReviews.cs" />
     <Compile Include="Models\ScheduledClasses.cs" />
+    <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Models\teacherContent.cs" />
     <Compile Include="Models\TeacherDetails.cs" />
     <Compile Include="Models\UserModel.cs" />

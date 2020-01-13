@@ -32,6 +32,9 @@ namespace Recess.API.Models
         //public string description { get; set; }
         public string imageUrl { get; set; }
         public string category { get; set; }
+        public string submittedBy { get; set; }
+        public double rating { get; set; }
+        public int ratingCount { get; set; }
     }
     public class teacherCourseContent
     {
@@ -43,6 +46,8 @@ namespace Recess.API.Models
         //public DateTime endDate { get; set; }
         public string imageUrl { get; set; }
         public string submittedBy { get; set; }
+        public double rating { get; set; }
+        public int ratingCount { get; set; }
     }
     public class teacherStatistics
     {

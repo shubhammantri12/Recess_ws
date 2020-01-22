@@ -327,6 +327,44 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
+        [HttpGet]
+        [Route("globalSearch")]
+        public HttpResponseMessage globalSearch(string searchText,string type)
+        {
+            try
+            {
+                GlobalSearch response = _business.globalSearch(searchText,type);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpPost]
+        [Route("SaveVideoDetails")]
+        public HttpResponseMessage SaveVideoDetails(SaveVideoDetails video)
+        {
+            try
+            {
+
+                bool response = false;
+                if (_business.IsValidVideoTitle(video.title))
+                {
+                    response = _business.SaveVideoDetails(video);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "A video with same title already exists");
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
 
     }
 }

@@ -92,6 +92,18 @@ namespace Recess.API.Business
                 throw;
             }
         }
+        public bool IsValidVideoTitle(string name)
+        {
+            try
+            {
+                bool Response = _repository.checkValidVideoTitle(name);
+                return Response;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public getCourseContent getCourseContent(int courseid)
         {
             try
@@ -423,6 +435,34 @@ namespace Recess.API.Business
                 return response;
             }
             catch (Exception)
+            {
+                throw;
+            }
+        }
+        public GlobalSearch globalSearch(string searchText,string type)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(searchText))
+                {
+                    searchText = "";
+                }
+                GlobalSearch response = _repository.globalSearch(searchText,type);
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public bool SaveVideoDetails(SaveVideoDetails video)
+        {
+            try
+            {
+                bool response = _repository.SaveVideoDetails(video);
+                return response;
+            }
+            catch(Exception)
             {
                 throw;
             }

@@ -26,7 +26,7 @@ namespace Recess.API.Models
     }
     public class teacherVideoContent
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         public string title { get; set; }
         public DateTime submittedOn { get; set; }
         //public string description { get; set; }
@@ -38,7 +38,7 @@ namespace Recess.API.Models
     }
     public class teacherCourseContent
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         //public string category { get; set; }
         public string title { get; set; }
         public string description { get; set; }

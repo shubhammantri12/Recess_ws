@@ -111,11 +111,11 @@ namespace Recess.API.Repository
                         courses = (from DataRow row in _dt.Rows
                                    select new AllCourses
                                    {
-                                       courseId = Convert.ToInt32(row["Courseid"]),
-                                       courseCategory = Convert.ToString(row["courseCategory"]).Trim(),
+                                       id = Convert.ToInt32(row["Courseid"]),
+                                       category = Convert.ToString(row["courseCategory"]).Trim(),
                                        title = Convert.ToString(row["Title"]),
                                        submittedBy = Convert.ToString(row["submittedby"]),
-                                       teacherRating = Convert.ToDouble(row["courseRating"]),
+                                       rating = Convert.ToDouble(row["courseRating"]),
                                        imageUrl = Convert.ToString(row["imageUrl"]),
                                        ratingCount = Convert.ToInt32(row["TotalRatingCount"])
                                    }).ToList();
@@ -149,9 +149,9 @@ namespace Recess.API.Repository
                         courses = (from DataRow row in _dt.Rows
                                    select new AppDetails
                                    {
-                                       Id = Convert.ToInt32(row["id"]),
-                                       Description = Convert.ToString(row["description"]),
-                                       Title = Convert.ToString(row["title"]),
+                                       id = Convert.ToInt32(row["id"]),
+                                       description = Convert.ToString(row["description"]),
+                                       title = Convert.ToString(row["title"]),
                                    }).ToList();
                     }
                     return courses;
@@ -233,6 +233,33 @@ namespace Recess.API.Repository
             try
             {
                 string query = "select * from RecessApp.dbo.courselist where title = @name ";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+                    command.Parameters.Add("@name", SqlDbType.VarChar, 50).Value = name;
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool checkValidVideoTitle(string name)
+        {
+            try
+            {
+                string query = "select * from RecessApp.dbo.videoGym where videoTitle = @name ";
                 using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
                 {
                     SqlCommand command = new SqlCommand(query, connection);
@@ -387,11 +414,11 @@ namespace Recess.API.Repository
                 CourseList = (from DataRow row in _dt.Rows
                              select new AllCourses
                              {
-                                       courseId = Convert.ToInt32(row["Courseid"]),
-                                       courseCategory = Convert.ToString(row["courseCategory"]).Trim(),
+                                       id = Convert.ToInt32(row["Courseid"]),
+                                       category = Convert.ToString(row["courseCategory"]).Trim(),
                                        title = Convert.ToString(row["Title"]),
                                        submittedBy = Convert.ToString(row["submittedby"]),
-                                       teacherRating = Convert.ToDouble(row["teacherRating"]),
+                                       rating = Convert.ToDouble(row["teacherRating"]),
                                        imageUrl = Convert.ToString(row["imageUrl"])
                              }).ToList();
                 return CourseList;
@@ -422,12 +449,12 @@ namespace Recess.API.Repository
                         teachers = (from DataRow row in _dt.Rows
                                    select new TeacherDetails
                                    {
-                                       teacherId = Convert.ToInt32(row["teacherid"]),
+                                       id = Convert.ToInt32(row["teacherid"]),
                                        name = Convert.ToString(row["teachername"]),
                                        description = Convert.ToString(row["description"]),
-                                       totalcount = row["ratingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["ratingCount"]) ,
-                                       currentRating = row["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["teacherRating"]),
-                                       photourl = row["photourl"] == DBNull.Value ? "" : Convert.ToString(row["photourl"])
+                                       ratingCount = row["ratingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["ratingCount"]) ,
+                                       rating = row["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["teacherRating"]),
+                                       imageUrl = row["photourl"] == DBNull.Value ? "" : Convert.ToString(row["photourl"])
                                    }).ToList();
                     }
                     return teachers;
@@ -459,15 +486,15 @@ namespace Recess.API.Repository
                         videos = (from DataRow row in _dt.Rows
                                    select new AllCourses
                                    {
-                                       courseId = Convert.ToInt32(row["videoid"]),
+                                       id = Convert.ToInt32(row["videoid"]),
                                        title = Convert.ToString(row["videoTitle"]),
-                                       courseCategory= Convert.ToString(row["videoCategory"]),
+                                       category= Convert.ToString(row["videoCategory"]),
                                        //videodescription = Convert.ToString(row["videoDescription"]),
                                        //videoRatingCount = Convert.ToInt32(row["totalRatingCount"]),
                                        //submittedOn = Convert.ToDateTime(row["submittedOn"]),
                                        submittedBy = Convert.ToString(row["submittedBy"]),
                                        //Teacherid= Convert.ToInt32(row["teacherId"]),
-                                       teacherRating = Convert.ToDouble(row["videoRating"]),
+                                       rating = Convert.ToDouble(row["videoRating"]),
                                        imageUrl = Convert.ToString(row["imageUrl"])
                                    }).ToList();
                     }
@@ -737,7 +764,7 @@ namespace Recess.API.Repository
                 teacherCourses = (from DataRow row in _dt.Rows
                                   select new teacherCourseContent
                                   {
-                                      Id = Convert.ToInt32(row["Courseid"]),
+                                      id = Convert.ToInt32(row["Courseid"]),
                                       imageUrl = Convert.ToString(row["imageUrl"]),
                                       title = Convert.ToString(row["Title"]),
                                       description = Convert.ToString(row["description"]),
@@ -764,7 +791,7 @@ namespace Recess.API.Repository
                 teacherVideos = (from DataRow row in _dt.Rows
                                   select new teacherVideoContent
                                   {
-                                      Id = Convert.ToInt32(row["videoid"]),
+                                      id = Convert.ToInt32(row["videoid"]),
                                       imageUrl = Convert.ToString(row["imageUrl"]),
                                       title = Convert.ToString(row["videoTitle"]),
                                       category = Convert.ToString(row["videoCategory"]),
@@ -965,7 +992,7 @@ namespace Recess.API.Repository
                 {
                     SqlCommand command = new SqlCommand(query, connection);
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("@searchText", SqlDbType.VarChar,50).Value = searchText;
+                    command.Parameters.Add("@searchText", SqlDbType.VarChar,150).Value = searchText;
                     command.Parameters.Add("@type", SqlDbType.VarChar,5).Value = type;
                     connection.Open();
                     SqlDataAdapter _adapter = new SqlDataAdapter(command);
@@ -984,6 +1011,136 @@ namespace Recess.API.Repository
                     }
                     return searchResult;
                 }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public GlobalSearch globalSearch(string searchText,string type)
+        {
+            try
+            {
+                string query = "recessApp.dbo.getGlobalSearchResults";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@searchText", SqlDbType.VarChar, 150).Value = searchText;
+                    command.Parameters.Add("@type", SqlDbType.VarChar, 5).Value = type;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataSet _ds = new DataSet();
+                    _adapter.Fill(_ds);
+                    connection.Close();
+                    GlobalSearch searchResult = new GlobalSearch();
+                    if (_ds != null && _ds.Tables.Count > 0)
+                    {
+                        if (type.ToUpper() == "C")
+                        {
+                            searchResult.courses = fillSearchDetailsForCourses(_ds.Tables[0]);
+                        }
+                        else if (type.ToUpper() == "V")
+                        {
+                            searchResult.videos = fillSearchDetailsForVideos(_ds.Tables[0]);
+                        }
+                        else if (type.ToUpper() == "T")
+                        {
+                            searchResult.teachers = fillSearchDetailsForTeachers(_ds.Tables[0]);
+                        }
+                        else if (type.ToUpper() == "A")
+                        {
+                            searchResult.courses = fillSearchDetailsForCourses(_ds.Tables[0]);
+                            searchResult.videos = fillSearchDetailsForVideos(_ds.Tables[1]);
+                            searchResult.teachers = fillSearchDetailsForTeachers(_ds.Tables[2]);
+                        }
+                    }
+                    return searchResult;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<AllCourses> fillSearchDetailsForCourses(DataTable _dt)
+        {
+            List<AllCourses> courses = new List<AllCourses>();
+            if (_dt != null && _dt.Rows.Count > 0)
+            {
+                courses = (from DataRow row in _dt.Rows
+                           select new AllCourses
+                           {
+                               id = Convert.ToInt32(row["Courseid"]),
+                               category = Convert.ToString(row["courseCategory"]).Trim(),
+                               title = Convert.ToString(row["Title"]),
+                               submittedBy = Convert.ToString(row["submittedby"]),
+                               rating = Convert.ToDouble(row["courseRating"]),
+                               imageUrl = Convert.ToString(row["imageUrl"]),
+                               ratingCount = Convert.ToInt32(row["TotalRatingCount"])
+                           }).ToList();
+            }
+            return courses;
+        }
+        private List<TeacherDetails> fillSearchDetailsForTeachers(DataTable _dt)
+        {
+            List<TeacherDetails> teachers = new List<TeacherDetails>();
+            if (_dt != null && _dt.Rows.Count > 0)
+            {
+                teachers = (from DataRow row in _dt.Rows
+                            select new TeacherDetails
+                            {
+                                id = Convert.ToInt32(row["teacherid"]),
+                                name = Convert.ToString(row["teachername"]),
+                                ratingCount = row["ratingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["ratingCount"]),
+                                rating = row["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["teacherRating"]),
+                                imageUrl = row["photourl"] == DBNull.Value ? "" : Convert.ToString(row["photourl"])
+                            }).ToList();
+            }
+            return teachers;
+        }
+        private List<VideoLessons> fillSearchDetailsForVideos(DataTable _dt)
+        {
+            List<VideoLessons> videos = new List<VideoLessons>();
+            if (_dt != null && _dt.Rows.Count > 0)
+            {
+                videos = (from DataRow row in _dt.Rows
+                            select new VideoLessons
+                            {
+                                id = Convert.ToInt32(row["videoid"]),
+                                title = Convert.ToString(row["videoTitle"]),
+                                submittedBy = Convert.ToString(row["submittedBy"]),
+                                rating = row["videoRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["videoRating"]),
+                                ratingCount = row["totalRatingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["totalRatingCount"]),
+                                submittedOn = Convert.ToDateTime(row["submittedOn"]),
+                                imageUrl = Convert.ToString(row["imageUrl"]),
+                                category = Convert.ToString(row["videoCategory"])
+
+                            }).ToList();
+            }
+            return videos;
+        }
+        public bool SaveVideoDetails(SaveVideoDetails VideoDetails)
+        {
+            try
+            {
+                string query = "RecessApp.dbo.saveVideoDetails";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@title", SqlDbType.VarChar,100).Value = VideoDetails.title;
+                    command.Parameters.Add("@description", SqlDbType.VarChar,1000).Value = VideoDetails.description;
+                    command.Parameters.Add("@submittedBy", SqlDbType.VarChar, 50).Value = VideoDetails.submittedBy;
+                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = VideoDetails.teacherId;
+                    command.Parameters.Add("@imageurl", SqlDbType.VarChar, 500).Value = VideoDetails.imageUrl;
+                    command.Parameters.Add("@VideoUrl", SqlDbType.VarChar, 500).Value = VideoDetails.videoUrl;
+                    command.Parameters.Add("@category", SqlDbType.VarChar,15).Value = VideoDetails.category;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
             }
             catch (Exception ex)
             {

@@ -206,10 +206,12 @@
     <Compile Include="Models\AppDetails.cs" />
     <Compile Include="Models\CourseTeacherDetails.cs" />
     <Compile Include="Models\getCourseContent.cs" />
+    <Compile Include="Models\GlobalSearch.cs" />
     <Compile Include="Models\myRegisteredClasses.cs" />
     <Compile Include="Models\RegisterClass.cs" />
     <Compile Include="Models\SaveCourseDetails.cs" />
     <Compile Include="Models\SaveUserReviews.cs" />
+    <Compile Include="Models\SaveVideoDetails.cs" />
     <Compile Include="Models\ScheduledClasses.cs" />
     <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Models\teacherContent.cs" />

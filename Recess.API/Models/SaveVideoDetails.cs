@@ -5,14 +5,14 @@ using System.Web;
 
 namespace Recess.API.Models
 {
-    public class AllCourses
+    public class SaveVideoDetails
     {
-        public int id { get; set; }
-        public string category { get; set; }
         public string title { get; set; }
+        public string description { get; set; }
         public string submittedBy { get; set; }
-        public double rating { get; set; }
-        public int ratingCount { get; set; }
+        public int teacherId { get; set; }
+        public string videoUrl { get; set; }
+        public string category { get; set; }
         public string imageUrl { get; set; }
     }
 }

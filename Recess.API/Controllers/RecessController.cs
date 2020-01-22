@@ -41,7 +41,7 @@ namespace Recess.API.Controllers
             try
             {
                 bool response = false;
-                if (_business.IsValidEmail(user.email))
+                if (_business.IsValidEmail(user.email,"U"))
                 {                
                   response = _business.register(user);
                     return Request.CreateResponse(HttpStatusCode.OK, response);
@@ -189,9 +189,9 @@ namespace Recess.API.Controllers
                 List<AllCourses> response = _business.getAllVideos();
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpPost]
@@ -200,12 +200,12 @@ namespace Recess.API.Controllers
         {
             try
             {
-                bool response = _business.registerClass(registerObject);
+                List<myRegisteredClasses> response = _business.registerClass(registerObject);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpPost]
@@ -217,9 +217,9 @@ namespace Recess.API.Controllers
                 bool response = _business.SaveUserReviews(SaveUserReviews);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
         [HttpGet]
@@ -231,9 +231,138 @@ namespace Recess.API.Controllers
                 List<SaveUserReviews> response = _business.GetUserReviews(id,type);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+        [HttpPost]
+        [Route("SaveTeacherDetails")]
+        public HttpResponseMessage SaveTeacherDetails(SaveTeacherDetails TeacherDetails)
+        {
+            try
+            {
+                if (_business.IsValidEmail(TeacherDetails.email,"T"))
+                {
+                    bool response = _business.SaveTeacherDetails(TeacherDetails);
+                    return Request.CreateResponse(HttpStatusCode.OK, response);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Email_Id is already registered");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("GetMyRegisteredClasses")]
+        public HttpResponseMessage GetMyRegisteredClasses(string emailId)
+        {
+            try
+            {
+                List<myRegisteredClasses> response = _business.GetMyRegisteredClasses(emailId);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("GetTeacherInfo")]
+        public HttpResponseMessage GetTeacherInfo(int teacherId)
+        {
+            try
+            {
+                teacherContent response = _business.GetTeacherInfo(teacherId);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("GetVideoInfo")]
+        public HttpResponseMessage GetVideoInfo(int videoId)
+        {
+            try
+            {
+                videoContent response = _business.GetVideoInfo(videoId);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("ValidateTeacher")]
+        public HttpResponseMessage ValidateTeacher(string email)
+        {
+            try
+            {
+                bool response = _business.ValidateTeacher(email);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("search")]
+        public HttpResponseMessage search(string searchText, string type)
+        {
+            try
+            {
+                List<SearchModel> response = _business.search(searchText, type);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpGet]
+        [Route("globalSearch")]
+        public HttpResponseMessage globalSearch(string searchText,string type)
+        {
+            try
+            {
+                GlobalSearch response = _business.globalSearch(searchText,type);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpPost]
+        [Route("SaveVideoDetails")]
+        public HttpResponseMessage SaveVideoDetails(SaveVideoDetails video)
+        {
+            try
+            {
+
+                bool response = false;
+                if (_business.IsValidVideoTitle(video.title))
+                {
+                    response = _business.SaveVideoDetails(video);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "A video with same title already exists");
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
 

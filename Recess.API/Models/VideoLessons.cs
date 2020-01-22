@@ -7,14 +7,13 @@ namespace Recess.API.Models
 {
     public class VideoLessons
     {
-            public int videoid { get; set; }
-            public string videotitle { get; set; }
-            public string videodescription { get; set; }
+            public int id { get; set; }
+            public string title { get; set; }
             public DateTime submittedOn { get; set; }
             public string submittedBy { get; set; }
-            public int Teacherid { get; set; }
-            public string VideoUrl { get; set; }
-            public double videoRating { get; set; }
-            public int videoRatingCount { get; set; }   
+            public string imageUrl { get; set; }
+            public double rating { get; set; }
+            public int ratingCount { get; set; }
+            public string category { get; set; }
     }
 }

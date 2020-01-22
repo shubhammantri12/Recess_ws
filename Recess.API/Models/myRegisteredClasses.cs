@@ -5,16 +5,14 @@ using System.Web;
 
 namespace Recess.API.Models
 {
-    public class ScheduledClasses
+    public class myRegisteredClasses
     {
         public int classId { get; set; }
+
         public int courseId { get; set; }
-        public int teacherId { get; set; }
-        public string classDescription { get; set; }
+
         public string classTitle { get; set; }
         public DateTime beginDate { get; set; }
         public DateTime endDate { get; set; }
-        public string teacherName { get; set; }
-
     }
 }

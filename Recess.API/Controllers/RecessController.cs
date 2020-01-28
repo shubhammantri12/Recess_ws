@@ -33,7 +33,40 @@ namespace Recess.API.Controllers
                     throw;
                 }
             }
-        
+        [HttpPost]
+        [Route("login")]
+        public HttpResponseMessage login(LoginRequest request)
+        {
+            try
+            {
+                LoginResponse response = new LoginResponse();
+                
+                    response = _business.login(request);
+                    return Request.CreateResponse(HttpStatusCode.OK, response);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpPost]
+        [Route("logout")]
+        public HttpResponseMessage logout(LoginRequest request)
+        {
+            try
+            {
+                bool response = false;
+
+                response = _business.logout(request);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
         [HttpPost]
         [Route("registerUser")]
         public HttpResponseMessage registerUser(UserModel user)

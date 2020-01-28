@@ -12,6 +12,105 @@ namespace Recess.API.Repository
 {
     public class RecessRepository
     {
+        public bool CheckIfUserExists(string email)
+        {
+            try
+            {
+                string query = "Select * from userlogin where useremail = @email";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add("@email", SqlDbType.VarChar, 50).Value = email;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    if (_dt.Rows.Count>0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }   
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool UpdateTokenForUser(string emailId,Guid token,string ip)
+        {
+            try
+            {
+                string query = "RecessApp.dbo.insertToken";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@emailid", SqlDbType.VarChar, 30).Value = emailId;
+                    command.Parameters.Add("@token", SqlDbType.UniqueIdentifier).Value = token;
+                    command.Parameters.Add("@clientid", SqlDbType.VarChar, 50).Value = ip;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool AddUserToken(string emailId, Guid token, string ip)
+        {
+            try
+            {
+                string query = "Insert into userlogin values (@emailid,@ip,@token)";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@emailid", SqlDbType.VarChar, 30).Value = emailId;
+                    command.Parameters.Add("@token", SqlDbType.UniqueIdentifier).Value = token;
+                    command.Parameters.Add("@clientid", SqlDbType.VarChar, 50).Value = ip;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool logout(string emailId)
+        {
+            try
+            {
+                string query = "UPDATE userlogin SET token = @token,clientId = '' WHERE [useremail] = @emailid ";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.Add("@emailid", SqlDbType.VarChar, 50).Value = emailId;
+                    command.Parameters.Add("@token", SqlDbType.UniqueIdentifier).Value = Guid.Empty;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public bool register(UserModel user)
         {
             try

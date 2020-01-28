@@ -207,6 +207,7 @@
     <Compile Include="Models\CourseTeacherDetails.cs" />
     <Compile Include="Models\getCourseContent.cs" />
     <Compile Include="Models\GlobalSearch.cs" />
+    <Compile Include="Models\LoginRequest.cs" />
     <Compile Include="Models\myRegisteredClasses.cs" />
     <Compile Include="Models\RegisterClass.cs" />
     <Compile Include="Models\SaveCourseDetails.cs" />

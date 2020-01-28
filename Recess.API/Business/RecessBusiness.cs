@@ -18,6 +18,61 @@ namespace Recess.API.Business
     public class RecessBusiness
     {
         RecessRepository _repository = new RecessRepository();
+        public LoginResponse login(LoginRequest request)
+        {
+            try
+            {
+                LoginResponse response = new LoginResponse();
+                Guid token;
+                string ip = string.Empty;
+                HttpContext context = HttpContext.Current;
+                string ipAdd = context.Request.ServerVariables["HTTP_X_FORWADED_FOR"];
+                if (!string.IsNullOrEmpty(ipAdd))
+                {
+                    string[] ipaddress = ipAdd.Split(',');
+                    if (ipaddress.Length > 0)
+                    {
+                        ip = ipaddress[0];
+                    }
+                }
+                else
+                {
+                    ip = context.Request.ServerVariables["REMOTE_ADDR"];
+                }
+                token = Guid.NewGuid();
+                bool userExists = _repository.CheckIfUserExists(request.emailId);
+                if (userExists)
+                {
+                    _repository.UpdateTokenForUser(request.emailId, token, ip);
+                    response.emailId = request.emailId;
+                    response.token = token;
+                    return response;
+                }
+                else
+                {
+                    _repository.AddUserToken(request.emailId, token, ip);
+                    response.emailId = request.emailId;
+                    response.token = token;
+                    return response;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool logout(LoginRequest request)
+        {
+            try
+            {
+                bool response = _repository.logout(request.emailId);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public bool register(UserModel user)
         {
             try

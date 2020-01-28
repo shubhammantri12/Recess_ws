@@ -1246,5 +1246,84 @@ namespace Recess.API.Repository
                 throw;
             }
         }
+        public List<AllCourses> ViewAllCourses(string category)
+        {
+            try
+            {
+                string query = "recessApp.dbo.ViewAllCourses";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@category", SqlDbType.VarChar, 10).Value = category.ToUpper();
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<AllCourses> courses = new List<AllCourses>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        courses = (from DataRow row in _dt.Rows
+                                   select new AllCourses
+                                   {
+                                       id = Convert.ToInt32(row["Courseid"]),
+                                       category = Convert.ToString(row["courseCategory"]).Trim(),
+                                       title = Convert.ToString(row["Title"]),
+                                       submittedBy = Convert.ToString(row["submittedby"]),
+                                       rating = Convert.ToDouble(row["courseRating"]),
+                                       imageUrl = Convert.ToString(row["imageUrl"]),
+                                       ratingCount = Convert.ToInt32(row["TotalRatingCount"])
+                                   }).ToList();
+                    }
+                    return courses;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<VideoLessons> ViewAllVideos(string category)
+        {
+            try
+            {
+                string query = "recessApp.dbo.ViewAllVideos";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@category", SqlDbType.VarChar, 10).Value = category.ToUpper();
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<VideoLessons> videos = new List<VideoLessons>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        videos = (from DataRow row in _dt.Rows
+                                  select new VideoLessons
+                                  {
+                                      id = Convert.ToInt32(row["videoid"]),
+                                      title = Convert.ToString(row["videoTitle"]),
+                                      submittedBy = Convert.ToString(row["submittedBy"]),
+                                      rating = row["videoRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["videoRating"]),
+                                      ratingCount = row["totalRatingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["totalRatingCount"]),
+                                      submittedOn = Convert.ToDateTime(row["submittedOn"]),
+                                      imageUrl = Convert.ToString(row["imageUrl"]),
+                                      category = Convert.ToString(row["videoCategory"])
+
+                                  }).ToList();
+                    }
+                    return videos;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

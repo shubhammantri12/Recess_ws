@@ -522,7 +522,32 @@ namespace Recess.API.Business
                 throw;
             }
         }
-
+        public List<AllCourses> ViewAllCourses(string category)
+        {
+            try
+            {
+                List<AllCourses> courses = _repository.ViewAllCourses(category);
+                // CourseDetails[] Response = courses.ToArray();
+                return courses;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public List<VideoLessons> ViewAllVideos(string category)
+        {
+            try
+            {
+                List<VideoLessons> videos = _repository.ViewAllVideos(category);
+                // CourseDetails[] Response = courses.ToArray();
+                return videos;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
         //{
         //    using (var hmac = new System.Security.Cryptography.HMACSHA512())

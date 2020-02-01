@@ -13,6 +13,7 @@ namespace Recess.API.Models
         public double rating { get; set; }
         public int ratingCount { get; set; }
         public string imageUrl { get; set; }
+        public int totalCount { get; set; }
         
        
     }

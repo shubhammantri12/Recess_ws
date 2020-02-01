@@ -548,6 +548,22 @@ namespace Recess.API.Business
                 throw;
             }
         }
+        public ViewAllDetails viewAllDetails(string type, string category, int pageIndex, int count)
+        {
+            try
+            {
+                if(string.IsNullOrEmpty(category))
+                {
+                    category = "";
+                }
+                ViewAllDetails response = _repository.ViewAllDetails(type,category,pageIndex,count);
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
         //{
         //    using (var hmac = new System.Security.Cryptography.HMACSHA512())

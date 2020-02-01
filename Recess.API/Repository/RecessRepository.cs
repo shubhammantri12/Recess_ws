@@ -1325,5 +1325,109 @@ namespace Recess.API.Repository
                 throw;
             }
         }
+        public ViewAllDetails ViewAllDetails(string type, string category,int pageIndex,int count)
+        {
+            try
+            {
+                string query = "recessApp.dbo.viewAllDetails";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@type", SqlDbType.VarChar, 5).Value = type;
+                    command.Parameters.Add("@category", SqlDbType.VarChar, 15).Value = category;
+                    command.Parameters.Add("@pagenumber", SqlDbType.Int).Value = pageIndex;
+                    command.Parameters.Add("@count", SqlDbType.Int).Value = count;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataSet _ds = new DataSet();
+                    _adapter.Fill(_ds);
+                    connection.Close();
+                    ViewAllDetails Result = new ViewAllDetails();
+                    if (_ds != null && _ds.Tables.Count > 0)
+                    {
+                        if (type.ToUpper() == "C")
+                        {
+                            Result.courses = fillViewDetailsForCourses(_ds);
+                        }
+                        else if (type.ToUpper() == "V")
+                        {
+                            Result.videos = fillViewDetailsForVideos(_ds);
+                        }
+                        if (type.ToUpper() == "T")
+                        {
+                            Result.teachers = fillViewDetailsForTeachers(_ds);
+                        }
+                    }
+                    return Result;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        private List<AllCourses> fillViewDetailsForCourses(DataSet _ds)
+        {
+            List<AllCourses> courses = new List<AllCourses>();
+            if (_ds != null && _ds.Tables.Count > 0)
+            {
+                courses = (from DataRow row in _ds.Tables[0].Rows
+                           select new AllCourses
+                           {
+                               id = Convert.ToInt32(row["Courseid"]),
+                               category = Convert.ToString(row["courseCategory"]).Trim(),
+                               title = Convert.ToString(row["Title"]),
+                               description = Convert.ToString(row["description"]),
+                               submittedBy = Convert.ToString(row["submittedby"]),
+                               rating = Convert.ToDouble(row["courseRating"]),
+                               imageUrl = Convert.ToString(row["imageUrl"]),
+                               ratingCount = Convert.ToInt32(row["TotalRatingCount"]),
+                               totalCount = Convert.ToInt32(_ds.Tables[1].Rows[0]["totalCount"])
+                           }).ToList();
+            }
+            return courses;
+        }
+        private List<TeacherDetails> fillViewDetailsForTeachers(DataSet _ds)
+        {
+            List<TeacherDetails> teachers = new List<TeacherDetails>();
+            if (_ds != null && _ds.Tables.Count > 0)
+            {
+                teachers = (from DataRow row in _ds.Tables[0].Rows
+                            select new TeacherDetails
+                            {
+                                id = Convert.ToInt32(row["teacherid"]),
+                                name = Convert.ToString(row["teachername"]),
+                                description = Convert.ToString(row["description"]),
+                                ratingCount = row["ratingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["ratingCount"]),
+                                rating = row["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["teacherRating"]),
+                                imageUrl = row["photourl"] == DBNull.Value ? "" : Convert.ToString(row["photourl"]),
+                                totalCount = Convert.ToInt32(_ds.Tables[1].Rows[0]["totalCount"])
+                            }).ToList();
+            }
+            return teachers;
+        }
+        private List<VideoLessons> fillViewDetailsForVideos(DataSet _ds)
+        {
+            List<VideoLessons> videos = new List<VideoLessons>();
+            if (_ds != null && _ds.Tables.Count > 0)
+            {
+                videos = (from DataRow row in _ds.Tables[0].Rows
+                          select new VideoLessons
+                          {
+                              id = Convert.ToInt32(row["videoid"]),
+                              title = Convert.ToString(row["videoTitle"]),
+                              submittedBy = Convert.ToString(row["submittedBy"]),
+                              description = Convert.ToString(row["videodescription"]),
+                              rating = row["videoRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["videoRating"]),
+                              ratingCount = row["totalRatingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["totalRatingCount"]),
+                              submittedOn = Convert.ToDateTime(row["submittedOn"]),
+                              imageUrl = Convert.ToString(row["imageUrl"]),
+                              category = Convert.ToString(row["videoCategory"]),
+                              totalCount = Convert.ToInt32(_ds.Tables[1].Rows[0]["totalCount"])
+                          }).ToList();
+            }
+            return videos;
+        }
     }
 }

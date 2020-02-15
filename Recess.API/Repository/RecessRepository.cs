@@ -1325,7 +1325,7 @@ namespace Recess.API.Repository
                 throw;
             }
         }
-        public ViewAllDetails ViewAllDetails(string type, string category,int pageIndex,int count)
+        public seeAllDetails ViewAllDetails(string type, string category,int pageIndex,int count)
         {
             try
             {
@@ -1343,23 +1343,64 @@ namespace Recess.API.Repository
                     DataSet _ds = new DataSet();
                     _adapter.Fill(_ds);
                     connection.Close();
-                    ViewAllDetails Result = new ViewAllDetails();
+                    seeAllDetails data = new seeAllDetails();
                     if (_ds != null && _ds.Tables.Count > 0)
                     {
                         if (type.ToUpper() == "C")
                         {
-                            Result.courses = fillViewDetailsForCourses(_ds);
+                            data.listData = (from DataRow row in _ds.Tables[0].Rows
+                                       select new viewAll
+                                       {
+                                           id = Convert.ToInt32(row["Courseid"]),
+                                           category = Convert.ToString(row["courseCategory"]).Trim(),
+                                           title = Convert.ToString(row["Title"]),
+                                           description = Convert.ToString(row["description"]),
+                                           submittedBy = Convert.ToString(row["submittedby"]),
+                                           rating = Convert.ToDouble(row["courseRating"]),
+                                           imageUrl = Convert.ToString(row["imageUrl"]),
+                                           ratingCount = Convert.ToInt32(row["TotalRatingCount"])
+                                       }).ToList();
+                            data.totalCount = Convert.ToInt32(_ds.Tables[1].Rows[0]["totalCount"]);
+                            data.type = "courses";
+                            //Result.courses = fillViewDetailsForCourses(_ds);
                         }
                         else if (type.ToUpper() == "V")
                         {
-                            Result.videos = fillViewDetailsForVideos(_ds);
+                            data.listData = (from DataRow row in _ds.Tables[0].Rows
+                                      select new viewAll
+                                      {
+                                          id = Convert.ToInt32(row["videoid"]),
+                                          title = Convert.ToString(row["videoTitle"]),
+                                          submittedBy = Convert.ToString(row["submittedBy"]),
+                                          description = Convert.ToString(row["videodescription"]),
+                                          rating = row["videoRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["videoRating"]),
+                                          ratingCount = row["totalRatingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["totalRatingCount"]),
+                                          submittedOn = Convert.ToDateTime(row["submittedOn"]),
+                                          imageUrl = Convert.ToString(row["imageUrl"]),
+                                          category = Convert.ToString(row["videoCategory"])
+                                      }).ToList();
+                            data.totalCount = Convert.ToInt32(_ds.Tables[1].Rows[0]["totalCount"]);
+                            data.type = "videos";
+                            //Result.videos = fillViewDetailsForVideos(_ds);
                         }
                         if (type.ToUpper() == "T")
                         {
-                            Result.teachers = fillViewDetailsForTeachers(_ds);
+                            data.listData = (from DataRow row in _ds.Tables[0].Rows
+                                        select new viewAll
+                                        {
+                                            id = Convert.ToInt32(row["teacherid"]),
+                                            teacherName = Convert.ToString(row["teachername"]),
+                                            description = Convert.ToString(row["description"]),
+                                            ratingCount = row["ratingCount"] == DBNull.Value ? 0 : Convert.ToInt32(row["ratingCount"]),
+                                            rating = row["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["teacherRating"]),
+                                            imageUrl = row["photourl"] == DBNull.Value ? "" : Convert.ToString(row["photourl"]),
+                                        }).ToList();
+                            data.totalCount = Convert.ToInt32(_ds.Tables[1].Rows[0]["totalCount"]);
+                            data.type = "teachers";
+                            //Result.teachers = fillViewDetailsForTeachers(_ds);
                         }
                     }
-                    return Result;
+                    return data;
                 }
             }
             catch (Exception ex)

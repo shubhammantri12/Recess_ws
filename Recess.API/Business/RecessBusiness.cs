@@ -548,7 +548,7 @@ namespace Recess.API.Business
                 throw;
             }
         }
-        public ViewAllDetails viewAllDetails(string type, string category, int pageIndex, int count)
+        public seeAllDetails viewAllDetails(string type, string category, int pageIndex, int count)
         {
             try
             {
@@ -556,7 +556,7 @@ namespace Recess.API.Business
                 {
                     category = "";
                 }
-                ViewAllDetails response = _repository.ViewAllDetails(type,category,pageIndex,count);
+                seeAllDetails response = _repository.ViewAllDetails(type,category,pageIndex,count);
                 return response;
             }
             catch (Exception)

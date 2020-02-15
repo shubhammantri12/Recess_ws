@@ -398,41 +398,41 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
-        [HttpGet]
-        [Route("ViewAllCourses")]
-        public HttpResponseMessage ViewAllCourses(string category)
-        {
-            try
-            {
-                List<AllCourses> response = _business.ViewAllCourses(category);
-                return Request.CreateResponse(HttpStatusCode.OK, response);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
-            }
-        }
-        [HttpGet]
-        [Route("ViewAllVideos")]
-        public HttpResponseMessage ViewAllVideos(string category)
-        {
-            try
-            {
-                List<VideoLessons> response = _business.ViewAllVideos(category);
-                return Request.CreateResponse(HttpStatusCode.OK, response);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
-            }
-        }
+        //[HttpGet]
+        //[Route("ViewAllCourses")]
+        //public HttpResponseMessage ViewAllCourses(string category)
+        //{
+        //    try
+        //    {
+        //        List<AllCourses> response = _business.ViewAllCourses(category);
+        //        return Request.CreateResponse(HttpStatusCode.OK, response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+        //    }
+        //}
+        //[HttpGet]
+        //[Route("ViewAllVideos")]
+        //public HttpResponseMessage ViewAllVideos(string category)
+        //{
+        //    try
+        //    {
+        //        List<VideoLessons> response = _business.ViewAllVideos(category);
+        //        return Request.CreateResponse(HttpStatusCode.OK, response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+        //    }
+        //}
         [HttpGet]
         [Route("viewAllDetails")]
         public HttpResponseMessage viewAllDetails(string type, string category, int pageIndex, int count)
         {
             try
             {
-                ViewAllDetails response = _business.viewAllDetails(type, category,pageIndex,count);
+                seeAllDetails response = _business.viewAllDetails(type, category,pageIndex,count);
                 return Request.CreateResponse(HttpStatusCode.OK, response);
             }
             catch (Exception ex)

@@ -17,4 +17,13 @@ namespace Recess.API.Models
         public string teacherName { get; set; }
 
     }
+    public class saveScheduleClass
+    {
+        public int courseId { get; set; }
+        public int teacherId { get; set; }
+        public string description { get; set; }
+        public string title { get; set; }
+        public DateTime beginTime { get; set; }
+        public DateTime endTime { get; set; }
+    }
 }

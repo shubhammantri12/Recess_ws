@@ -213,6 +213,7 @@
     <Compile Include="Models\SaveCourseDetails.cs" />
     <Compile Include="Models\SaveUserReviews.cs" />
     <Compile Include="Models\SaveVideoDetails.cs" />
+    <!--<Compile Include="Models\scheduleClassModel.cs" />-->
     <Compile Include="Models\ScheduledClasses.cs" />
     <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Models\teacherContent.cs" />

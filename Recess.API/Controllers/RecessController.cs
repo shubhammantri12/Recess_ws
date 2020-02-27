@@ -440,5 +440,19 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
+        [HttpPost]
+        [Route("scheduleClass")]
+        public HttpResponseMessage scheduleClass(saveScheduleClass classes)
+        {
+            try
+            {
+                bool response = _business.scheduleClass(classes);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
     }
 }

@@ -299,7 +299,7 @@ namespace Recess.API.Repository
                 throw;
             }
         }
-        public bool SaveCourseDetails(SaveCourseDetails courseDetails)
+        public int SaveCourseDetails(SaveCourseDetails courseDetails)
         {
             try
             {
@@ -316,11 +316,14 @@ namespace Recess.API.Repository
                     command.Parameters.Add("@VideoUrl", SqlDbType.VarChar, 200).Value = courseDetails.VideoUrl;
                     command.Parameters.Add("@beginDate", SqlDbType.DateTime).Value = courseDetails.beginDate;
                     command.Parameters.Add("@EndDate", SqlDbType.DateTime).Value = courseDetails.endDate;
+                    command.Parameters.Add("@courseid", SqlDbType.Int, 20);
+                    command.Parameters["@courseid"].Direction = ParameterDirection.Output;
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();
+                    courseDetails.courseId = Convert.ToInt32(command.Parameters["@courseid"].Value);
                 }
-                return true;
+                return courseDetails.courseId;
             }
             catch (Exception ex)
             {
@@ -449,8 +452,8 @@ namespace Recess.API.Repository
                 courses.submittedBy = Convert.ToString(_dt.Rows[0]["submittedby"]);
                 courses.VideoUrl = Convert.ToString(_dt.Rows[0]["videoUrl"]);
                 courses.imageUrl = Convert.ToString(_dt.Rows[0]["imageUrl"]);
-                courses.courseRating = Convert.ToDouble(_dt.Rows[0]["courseRating"]);
-                courses.totalRatingCount = Convert.ToInt32(_dt.Rows[0]["totalRatingCount"]);
+                courses.courseRating = _dt.Rows[0]["courseRating"] == DBNull.Value ? 0 : Convert.ToDouble(_dt.Rows[0]["courseRating"]);
+                courses.totalRatingCount = _dt.Rows[0]["totalRatingCount"] == DBNull.Value ? 0 : Convert.ToInt32(_dt.Rows[0]["totalRatingCount"]);
                 courses.beginDate = Convert.ToDateTime(_dt.Rows[0]["beginDate"]);
                 courses.endDate = Convert.ToDateTime(_dt.Rows[0]["endDate"]);
                 return courses;
@@ -492,8 +495,8 @@ namespace Recess.API.Repository
                 teachers.teacherId = Convert.ToInt32(_dt.Rows[0]["teacherid"]);
                 teachers.teacherName = Convert.ToString(_dt.Rows[0]["teachername"]);
                 teachers.description = Convert.ToString(_dt.Rows[0]["description"]);
-                teachers.teacherRating = Convert.ToDouble(_dt.Rows[0]["teacherRating"]);
-                teachers.teacherRatingCount = Convert.ToInt32(_dt.Rows[0]["ratingCount"]);
+                teachers.teacherRating = _dt.Rows[0]["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(_dt.Rows[0]["teacherRating"]);
+                teachers.teacherRatingCount = _dt.Rows[0]["ratingCount"] == DBNull.Value ? 0 : Convert.ToInt32(_dt.Rows[0]["ratingCount"]);
                 teachers.photoUrl = Convert.ToString(_dt.Rows[0]["photourl"]);
                 teachers.zoomid = Convert.ToString(_dt.Rows[0]["zoomid"]);
                 
@@ -517,7 +520,7 @@ namespace Recess.API.Repository
                                        category = Convert.ToString(row["courseCategory"]).Trim(),
                                        title = Convert.ToString(row["Title"]),
                                        submittedBy = Convert.ToString(row["submittedby"]),
-                                       rating = Convert.ToDouble(row["teacherRating"]),
+                                       rating = row["teacherRating"] == DBNull.Value ? 0 : Convert.ToDouble(row["teacherRating"]),
                                        imageUrl = Convert.ToString(row["imageUrl"])
                              }).ToList();
                 return CourseList;
@@ -1469,6 +1472,61 @@ namespace Recess.API.Repository
                           }).ToList();
             }
             return videos;
+        }
+        public bool scheduleClass(saveScheduleClass classes)
+        {
+            try
+            {
+                string query = "RecessApp.dbo.ScheduleClass";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@courseid", SqlDbType.Int).Value = classes.courseId;
+                    command.Parameters.Add("@teacherid", SqlDbType.Int).Value = classes.teacherId;
+                    command.Parameters.Add("@classTitle", SqlDbType.VarChar, 50).Value = Convert.ToString(classes.title);
+                    command.Parameters.Add("@classDescription", SqlDbType.VarChar, 200).Value = Convert.ToString(classes.description);
+                    command.Parameters.Add("@beginTime", SqlDbType.DateTime).Value = classes.beginTime; 
+                    command.Parameters.Add("@endTime", SqlDbType.DateTime).Value = classes.endTime;
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public bool checkIfClasssExists(saveScheduleClass classes)
+        {
+          try
+            {
+                string query = "select * from RecessApp.dbo.scheduledClasses where Courseid=@courseid and teacherid = @teacherid and (@date >= beginTime or @date <=endTime)  ";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+                    command.Parameters.Add("@courseid", SqlDbType.VarChar, 50).Value = classes.courseId;
+                    command.Parameters.Add("@teacherid", SqlDbType.VarChar, 50).Value = classes.teacherId;
+                    command.Parameters.Add("@date", SqlDbType.VarChar, 50).Value = classes.beginTime;
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

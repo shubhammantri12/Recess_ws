@@ -203,11 +203,26 @@ namespace Recess.API.Business
 
                 //    }
                 //}
-                
-                
-                 bool Response = _repository.SaveCourseDetails(courseDetails);
+
+                bool response = false;
+                 int Courseid = _repository.SaveCourseDetails(courseDetails);
+                if(Courseid !=null || Courseid !=0)
+                {
+                    foreach(saveScheduleClass classes in courseDetails.scheduledClass)
+                    {
+                        classes.courseId = Courseid;
+                        classes.teacherId = courseDetails.teacherId;
+                        //classes.teacherName = courseDetails.submittedBy;
+                        _repository.scheduleClass(classes);
+                    }
+                    response = true;
+                }
+                else
+                {
+                    throw new Exception("An error occured while adding the course");
+                }
                
-                    return Response;
+                    return response;
             }
             catch (Exception ex)
             {
@@ -563,6 +578,18 @@ namespace Recess.API.Business
             {
                 throw;
             }
+        }
+        public bool scheduleClass(saveScheduleClass classes)
+        {
+            if (_repository.checkIfClasssExists(classes))
+            {
+                return _repository.scheduleClass(classes);
+            }
+            else
+            {
+                throw new Exception("A class at same time already scheduled");
+            }
+
         }
         //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
         //{

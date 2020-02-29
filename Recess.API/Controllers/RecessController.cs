@@ -132,6 +132,20 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "error");
             }
         }
+        [HttpGet]
+        [Route("getTeacherFunctions")]
+        public HttpResponseMessage getTeacherFunctions()
+        {
+            try
+            {
+                List<AppDetails> response = _business.getTeacherFunctions();
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
         [HttpPost]
         [Route("UpdateUser")]
         public HttpResponseMessage UpdateUser(UserModel user)

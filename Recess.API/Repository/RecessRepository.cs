@@ -263,6 +263,41 @@ namespace Recess.API.Repository
                 throw;
             }
         }
+        public List<AppDetails> getTeacherFunctions()
+        {
+            try
+            {
+                string query = "select * from recessApp.dbo.TeacherFunctions";
+                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlServerConnection"].ToString()))
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    SqlDataAdapter _adapter = new SqlDataAdapter(command);
+                    DataTable _dt = new DataTable();
+                    _adapter.Fill(_dt);
+                    connection.Close();
+                    List<AppDetails> details = new List<AppDetails>();
+                    if (_dt != null && _dt.Rows.Count > 0)
+                    {
+                        details = (from DataRow row in _dt.Rows
+                                   select new AppDetails
+                                   {
+                                       id = Convert.ToInt32(row["id"]),
+                                       description = Convert.ToString(row["description"]),
+                                       title = Convert.ToString(row["title"]),
+                                       type = Convert.ToString(row["type"]),
+                                   }).ToList();
+                    }
+                    return details;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public bool isValidEmail(string email,string type)
         {
             try

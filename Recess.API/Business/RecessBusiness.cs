@@ -269,6 +269,19 @@ namespace Recess.API.Business
                 throw;
             }
         }
+        public List<AppDetails> getTeacherFunctions()
+        {
+            try
+            {
+                List<AppDetails> courses = _repository.getTeacherFunctions();
+                // CourseDetails[] Response = courses.ToArray();
+                return courses;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public List<TeacherDetails> getAllTeacherDetails()
         {
             try

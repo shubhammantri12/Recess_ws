@@ -251,6 +251,7 @@ namespace Recess.API.Repository
                                        id = Convert.ToInt32(row["id"]),
                                        description = Convert.ToString(row["description"]),
                                        title = Convert.ToString(row["title"]),
+                                       type = Convert.ToString(row["type"]),
                                    }).ToList();
                     }
                     return courses;

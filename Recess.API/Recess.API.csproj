@@ -78,6 +78,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="paytm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\paytm.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -207,13 +211,15 @@
     <Compile Include="Models\CourseTeacherDetails.cs" />
     <Compile Include="Models\getCourseContent.cs" />
     <Compile Include="Models\GlobalSearch.cs" />
+    <Compile Include="Models\InstructorInfo.cs" />
     <Compile Include="Models\LoginRequest.cs" />
     <Compile Include="Models\myRegisteredClasses.cs" />
+    <Compile Include="Models\PaytmPaymentProcess.cs" />
     <Compile Include="Models\RegisterClass.cs" />
     <Compile Include="Models\SaveCourseDetails.cs" />
     <Compile Include="Models\SaveUserReviews.cs" />
     <Compile Include="Models\SaveVideoDetails.cs" />
-    <!--<Compile Include="Models\scheduleClassModel.cs" />-->
+    <Compile Include="Models\scheduleClassModel.cs" />
     <Compile Include="Models\ScheduledClasses.cs" />
     <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Models\teacherContent.cs" />

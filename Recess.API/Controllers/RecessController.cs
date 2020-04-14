@@ -291,7 +291,7 @@ namespace Recess.API.Controllers
             {
                 if (_business.IsValidEmail(TeacherDetails.email,"T"))
                 {
-                    bool response = _business.SaveTeacherDetails(TeacherDetails);
+                    int response = _business.SaveTeacherDetails(TeacherDetails);
                     return Request.CreateResponse(HttpStatusCode.OK, response);
                 }
                 else
@@ -310,8 +310,17 @@ namespace Recess.API.Controllers
         {
             try
             {
-                List<myRegisteredClasses> response = _business.GetMyRegisteredClasses(emailId);
-                return Request.CreateResponse(HttpStatusCode.OK, response);
+                var headerToken = Request.Headers.FirstOrDefault(x => x.Key == "auth_token").Value.FirstOrDefault();
+                bool isValidToken = _business.IsValidToken(headerToken);
+                if (isValidToken)
+                {
+                    List<myRegisteredClasses> response = _business.GetMyRegisteredClasses(emailId);
+                    return Request.CreateResponse(HttpStatusCode.OK, response);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, "Invalid Token");
+                }
             }
             catch (Exception ex)
             {
@@ -468,5 +477,49 @@ namespace Recess.API.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
             }
         }
+        [HttpGet]
+        [Route("GetTeacherInfoByEmail")]
+        public HttpResponseMessage GetTeacherInfoByEmail(string emailId)
+        {
+            try
+            {
+                InstructorInfo response = _business.GetTeacherInfoByEmail(emailId);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpPost]
+        [Route("paymentProcess")]
+        public HttpResponseMessage paymentProcess(PaytmPaymentProcess payment)
+        {
+            try
+            {
+                string response = _business.paymentProcess(payment);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+        [HttpPost]
+        [Route("paymentCallback")]
+        public HttpResponseMessage paymentCallback(PaytmPaymentProcess payment)
+        {
+            try
+            {
+                PaytmPaymentProcess response = payment;
+                //bool response = _business.paymentCallback(payment);
+                return Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+            }
+        }
+
     }
 }

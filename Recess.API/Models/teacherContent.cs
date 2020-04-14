@@ -14,6 +14,7 @@ namespace Recess.API.Models
     }
         public class teacherInfo
     {
+        public int teacherId { get; set; }
         public string teacherName { get; set; }
         public double rating { get; set; }
         public int ratingCount { get; set; }

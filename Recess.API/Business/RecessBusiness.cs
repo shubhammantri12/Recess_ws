@@ -122,7 +122,18 @@ namespace Recess.API.Business
                 throw;
             }
         }
-
+        public bool IsValidToken(string Token)
+        {
+            try
+            {
+                bool Response = _repository.IsValidToken(Token);
+                return Response;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public bool IsValidEmail(string email,string type)
         {
             try
@@ -400,7 +411,7 @@ namespace Recess.API.Business
                 throw;
             }
         }
-        public bool SaveTeacherDetails(SaveTeacherDetails TeacherDetails)
+        public int SaveTeacherDetails(SaveTeacherDetails TeacherDetails)
         {
             try
             {
@@ -408,12 +419,20 @@ namespace Recess.API.Business
                 {
                     TeacherDetails.photourl = "";
                 }
-                bool response = _repository.SaveTeacherDetails(TeacherDetails);
-                if(response)
+                if (TeacherDetails.courseCategory == null)
+                {
+                    TeacherDetails.courseCategory = "";
+                }
+                if (TeacherDetails.Gender == null)
+                {
+                    TeacherDetails.Gender = "";
+                }
+                int teacherid = _repository.SaveTeacherDetails(TeacherDetails);
+                if(teacherid !=0)
                 {
                     sendmailtoteacher(TeacherDetails);
                 }
-                return response;
+                return teacherid;
             }
             catch (Exception ex)
             {
@@ -604,6 +623,117 @@ namespace Recess.API.Business
             }
 
         }
+        public InstructorInfo GetTeacherInfoByEmail(string emailId)
+        {
+            try
+            {
+                InstructorInfo teacherInfo = _repository.GetTeacherInfoByEmail(emailId);
+                return teacherInfo;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public string paymentProcess(PaytmPaymentProcess payment)
+        {
+            Dictionary<String, String> paytmParams = new Dictionary<String, String>();
+
+            /* Find your MID in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys */
+            paytmParams.Add("MID", "fSfBHM68239464962268");
+
+            /* Find your WEBSITE in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys */
+            paytmParams.Add("WEBSITE", "WEBSTAGING");
+
+            /* Find your INDUSTRY_TYPE_ID in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys */
+            paytmParams.Add("INDUSTRY_TYPE_ID", "Retail");
+
+            /* WEB for website and WAP for Mobile-websites or App */
+            paytmParams.Add("CHANNEL_ID", "WEB");
+
+            /* Enter your unique order id */
+            paytmParams.Add("ORDER_ID", payment.ORDER_ID);
+
+            /* unique id that belongs to your customer */
+            paytmParams.Add("CUST_ID", payment.CUST_ID);
+
+            /* customer's mobile number */
+            paytmParams.Add("MOBILE_NO", payment.MOBILE_NO);
+
+            /* customer's email */
+            paytmParams.Add("EMAIL", payment.EMAIL);
+
+            /**
+            * Amount in INR that is payble by customer
+            * this should be numeric with optionally having two decimal points
+*/
+            paytmParams.Add("TXN_AMOUNT", payment.TXN_AMOUNT);
+
+            /* on completion of transaction, we will send you the response on this URL */
+            paytmParams.Add("CALLBACK_URL", "https://recessws.azurewebsites.net/api/Recess/paymentCallback");
+
+            /**
+            * Generate checksum for parameters we have
+            * You can get Checksum DLL from https://developer.paytm.com/docs/checksum/
+            * Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys 
+*/
+            String checksum = paytm.CheckSum.generateCheckSum("sh1S6vfwjga8dGlT", paytmParams);
+
+            /* for Staging */
+            String url = "https://securegw-stage.paytm.in/order/process";
+
+            string outputHTML = "<html>";
+            outputHTML += "<head>";
+            outputHTML += "<title>Merchant Check Out Page</title>";
+            outputHTML += "</head>";
+            outputHTML += "<body>";
+            outputHTML += "<center><h1>Please do not refresh this page...</h1></center>";
+            outputHTML += "<form method='post' action='" + url + "' name='f1'>";
+            outputHTML += "<table border='1'>";
+            outputHTML += "<tbody>";
+            foreach (string key in paytmParams.Keys)
+            {
+                outputHTML += "<input type='hidden' name='" + key + "' value='" + paytmParams[key] + "'>";
+            }
+            outputHTML += "<input type='hidden' name='CHECKSUMHASH' value='" + checksum + "'>";
+            outputHTML += "</tbody>";
+            outputHTML += "</table>";
+            outputHTML += "<script type='text/javascript'>";
+            outputHTML += "document.f1.submit();";
+            outputHTML += "</script>";
+            outputHTML += "</form>";
+            outputHTML += "</body>";
+            outputHTML += "</html>";
+             return outputHTML;
+
+            
+
+        }
+        //public void paymeentCallback(PaytmPaymentProcess payment)
+        //    {
+        //    String merchantKey = “merchantKey value” ; // Replace the with the Merchant Key provided by Paytm at the time of registration.
+
+        //Dictionary<string, string> parameters = new Dictionary<string, string>();
+        //string paytmChecksum = "";
+        //    foreach (string key in Request.Form.Keys)
+        //    {
+        //        parameters.Add(key.Trim(), Request.Form[key].Trim());
+        //    }
+
+        //    if (parameters.ContainsKey("CHECKSUMHASH"))
+        //    {
+        //        paytmChecksum = parameters["CHECKSUMHASH"];
+        //        parameters.Remove("CHECKSUMHASH");
+        //    }
+
+        //    if (CheckSum.verifyCheckSum(merchantKey, parameters, paytmChecksum))
+        //    {
+        //        Response.Write("Checksum Matched");
+        //    }
+        //    else
+        //    {
+        //        Response.Write("Checksum MisMatch");
+        //    }
         //private void createPassword(string password, out byte[] passwordhash, out byte[] passwordsalt)
         //{
         //    using (var hmac = new System.Security.Cryptography.HMACSHA512())
